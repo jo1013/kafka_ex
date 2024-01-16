@@ -2,17 +2,18 @@ from kafka import KafkaProducer
 import requests
 import json
 import logging
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Kafka Producer 설정
-producer = KafkaProducer(bootstrap_servers='localhost:9092',
-                         value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-
 import os
+
 
 kafka_server = os.environ.get('KAFKA_SERVER')
 mediastack_api_key = os.environ.get('MEDIASTACK_API_KEY')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Kafka Producer 설정
+producer = KafkaProducer(bootstrap_servers=kafka_server,
+                         value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+
+
 
 
 try :
@@ -29,7 +30,7 @@ try :
 
 
 except Exception as e :
-    logging.error("오류 발생: %s", str(e))r
+    logging.error("오류 발생: %s", str(e))
 # Kafka로 데이터 전송
 for article in news_data['data']:
     producer.send('news_topic', article)

@@ -1,3 +1,2 @@
 kafka-python
 requests
-urllib3<2.0
