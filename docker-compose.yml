@@ -11,12 +11,12 @@ services:
       - mynetwork
 
   zookeeper:
-      image: wurstmeister/zookeeper
-      container_name : zookeeper_news
-      ports:
-        - "2181:2181"
-      networks:
-      - mynetwork
+    image: wurstmeister/zookeeper
+    container_name : zookeeper_news
+    ports:
+      - "2181:2181"
+    networks:
+    - mynetwork
   kafka:
     container_name : kafka_news
     build:

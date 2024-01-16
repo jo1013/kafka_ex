@@ -9,8 +9,11 @@ kafka_server = os.environ.get('KAFKA_SERVER')
 mediastack_api_key = os.environ.get('MEDIASTACK_API_KEY')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
+
 # Kafka Producer 설정
 producer = KafkaProducer(bootstrap_servers=kafka_server,
+                         api_version=(0,11,5),
                          value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 
