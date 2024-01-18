@@ -1,1 +1,1 @@
-FROM wurstmeister/kafka
+FROM wurstmeister/kafka:latest

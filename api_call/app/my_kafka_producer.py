@@ -5,7 +5,7 @@ import logging
 import os
 
 
-kafka_server = os.environ.get('KAFKA_SERVER')
+kafka_server = os.environ.get('KAFKA_SERVER') 
 mediastack_api_key = os.environ.get('MEDIASTACK_API_KEY')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -24,7 +24,7 @@ try :
     url = "http://api.mediastack.com/v1/news"
     params = {
         'access_key': mediastack_api_key,
-        'keywords': 'cryto',
+        'keywords': 'crypto',
         'countries': 'us,kr,cn'
     }
     response = requests.get(url, params=params)
@@ -34,6 +34,7 @@ try :
 
 except Exception as e :
     logging.error("오류 발생: %s", str(e))
+    news_data = {'data': []}
 # Kafka로 데이터 전송
 for article in news_data['data']:
     producer.send('news_topic', article)
