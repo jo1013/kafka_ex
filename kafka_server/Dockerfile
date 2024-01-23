@@ -1,1 +1,1 @@
-FROM wurstmeister/kafka:latest
+FROM confluentinc/cp-kafka:latest

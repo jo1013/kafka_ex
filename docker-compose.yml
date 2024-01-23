@@ -30,12 +30,13 @@ services:
     build:
       context: ./kafka_server
     ports:
-      - "9094:9092"
-
+      - "9092:9092"
+    expose:
+      - '29092'
     environment:
-      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_ID: 0
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper_service:2181'
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -44,7 +45,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./kafka_server/kafka_init.sh:/kafka_init.sh
-    command: ["/bin/sh", "-c", "/kafka_init.sh && start-kafka.sh"]
+    command: ["/bin/sh", "-c", "/kafka_init.sh && start-kafka"]
     depends_on:
       - zookeeper_service
     networks:
