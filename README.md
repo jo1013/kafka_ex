@@ -58,3 +58,12 @@
 
 이 프로젝트를 통해 Kafka의 기본적인 사용 방법은 물론, 실시간 데이터 처리, 시스템 설계 및 배포 등에 대한 실질적인 경험을 얻을 수 있습니다. 데이터 수집부터 프론트엔드 개발, 시스템 모니터링에 이르기까지 전체적인 개발 프로세스를 경험할 수 있는 좋은 기회가 될 것입니다.
 
+
+
+
+트러블 슈팅 사항 : 
+
+m1은 arm64 라서 confluent에서 제공하는 이미지는 사용할수없다 ..
+
+참고 : https://github.com/arm64-compat/confluent-platform?tab=readme-ov-file
+https://devkhk.tistory.com/32

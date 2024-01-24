@@ -37,4 +37,4 @@ except Exception as e :
     news_data = {'data': []}
 # Kafka로 데이터 전송
 for article in news_data['data']:
-    producer.send('news_topic', article)
+    producer.send('crypto', article)

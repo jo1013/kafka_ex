@@ -1,8 +1,7 @@
 version: '3'
 services:
-
   api_service:
-    container_name : api_news
+    container_name: api_news
     build: 
       context: ./api_call
     env_file:
@@ -11,9 +10,7 @@ services:
       - mynetwork
 
   zookeeper_service:
-    image: confluentinc/cp-zookeeper:latest
-    container_name : zookeeper_service
-    platform: linux/amd64
+    image: ghcr.io/arm64-compat/confluentinc/cp-zookeeper:7.1.1 # m1용 이미지
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -24,32 +21,27 @@ services:
       - "2181:2181"
     networks:
       - mynetwork
-      
+
   kafka_service:
-    container_name : kafka_service
+    container_name: kafka_service
     build:
       context: ./kafka_server
+    depends_on:
+      - zookeeper_service
     ports:
       - "9092:9092"
     expose:
       - '29092'
     environment:
-      KAFKA_BROKER_ID: 0
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper_service:2181'
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper_service:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-  
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./kafka_server/kafka_init.sh:/kafka_init.sh
-    command: ["/bin/sh", "-c", "/kafka_init.sh && start-kafka"]
-    depends_on:
-      - zookeeper_service
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+      KAFKA_MIN_INSYNC_REPLICAS: '1'
     networks:
       - mynetwork
 
+    
 networks:
   mynetwork: {}
