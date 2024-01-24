@@ -42,6 +42,30 @@ services:
     networks:
       - mynetwork
 
+  consumer_service:
+      container_name: kafka_consumer
+      build:
+        context: ./kafka_consumer  # Kafka Consumer 코드가 있는 디렉토리
+      depends_on:
+        - kafka_service
+      networks:
+        - mynetwork
+      env_file:
+        - .env
+      # 환경 변수 및 볼륨 설정(필요한 경우)
+
+  mongodb_service:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    networks:
+      - mynetwork
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     
 networks:
   mynetwork: {}
