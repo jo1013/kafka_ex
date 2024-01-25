@@ -17,6 +17,7 @@ MONGODB_URI = os.environ.get('MONGODB_URI')
 def main():
     spark = SparkSession.builder \
         .appName("KafkaConsumerApp") \
+        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1") \
         .getOrCreate()
 
     # Define the schema of the data

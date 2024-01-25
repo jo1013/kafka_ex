@@ -6,6 +6,8 @@ services:
       context: ./api_call
     env_file:
       - .env
+    depends_on:
+      - kafka_service  # Kafka 서비스에 의존성 추가
     networks:
       - mynetwork
 

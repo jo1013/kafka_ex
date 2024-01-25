@@ -1,4 +1,4 @@
-from kafka import KafkaProducer
+from kafka import KafkaProducer, KafkaClient
 import requests
 import json
 import logging
@@ -9,7 +9,18 @@ kafka_server = os.environ.get('KAFKA_SERVER')
 mediastack_api_key = os.environ.get('MEDIASTACK_API_KEY')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def wait_for_kafka(kafka_server):
+    logging.info("Waiting for Kafka to be ready...")
+    while True:
+        try:
+            KafkaClient(bootstrap_servers=kafka_server)
+            logging.info("Kafka is ready.")
+            break
+        except Exception as e:
+            logging.error("Kafka is not ready yet: %s", e)
+            time.sleep(1)
 
+wait_for_kafka(kafka_server)
 
 # Kafka Producer 설정
 producer = KafkaProducer(bootstrap_servers=kafka_server,
