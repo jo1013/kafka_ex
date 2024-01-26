@@ -1,6 +1,7 @@
 version: '3'
 services:
-  api_service:
+
+  api_call:
     container_name: api_news
     build: 
       context: ./api_call
@@ -27,7 +28,7 @@ services:
   kafka_service:
     container_name: kafka_service
     build:
-      context: ./kafka_server
+      context: ./kafka_service
     depends_on:
       - zookeeper_service
     ports:
@@ -47,7 +48,7 @@ services:
   consumer_service:
       container_name: kafka_consumer
       build:
-        context: ./kafka_consumer  # Kafka Consumer 코드가 있는 디렉토리
+        context: ./consumer_service  # Kafka Consumer 코드가 있는 디렉토리
       depends_on:
         - kafka_service
       networks:
@@ -68,6 +69,25 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    
+
+  frontend_service:
+    build: ./frontend_service
+    ports:
+      - "3000:3000"
+  # FastAPI 서비스 정의
+    networks:
+    - mynetwork
+
+  data_api_service:
+    build: ./data_api_service
+    ports:
+      - "8001:8000"
+    depends_on:
+      - mongodb_service
+    env_file:
+      - .env
+    networks:
+      - mynetwork
+
 networks:
   mynetwork: {}

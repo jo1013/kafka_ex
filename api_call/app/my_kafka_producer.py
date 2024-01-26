@@ -3,6 +3,7 @@ import requests
 import json
 import logging
 import os
+import time
 
 
 kafka_server = os.environ.get('KAFKA_SERVER') 

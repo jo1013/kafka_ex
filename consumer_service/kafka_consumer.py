@@ -17,7 +17,7 @@ MONGODB_URI = os.environ.get('MONGODB_URI')
 def main():
     spark = SparkSession.builder \
         .appName("KafkaConsumerApp") \
-        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1") \
+        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1, org.mongodb.spark:mongo-spark-connector_2.12:3.0.0") \
         .getOrCreate()
 
     # Define the schema of the data
@@ -36,7 +36,7 @@ def main():
 
     # Write the stream to MongoDB
     query = df.writeStream \
-        .format("mongo") \
+        .format("com.mongodb.spark.sql.DefaultSource") \
         .option("uri", MONGODB_URI) \
         .start()
 
