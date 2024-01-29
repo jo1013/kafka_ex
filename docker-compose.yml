@@ -2,7 +2,7 @@ version: '3'
 services:
 
   api_call:
-    container_name: api_news
+    container_name: api_call
     build: 
       context: ./api_call
     env_file:
@@ -13,6 +13,7 @@ services:
       - mynetwork
 
   zookeeper_service:
+    container_name: zookeeper_service
     image: ghcr.io/arm64-compat/confluentinc/cp-zookeeper:7.1.1 # m1용 이미지
     environment:
       ZOOKEEPER_SERVER_ID: 1
@@ -45,20 +46,24 @@ services:
     networks:
       - mynetwork
 
+
   consumer_service:
-      container_name: kafka_consumer
+      container_name: consumer_service
       build:
         context: ./consumer_service  # Kafka Consumer 코드가 있는 디렉토리
       depends_on:
         - kafka_service
+        - mongodb_service
       networks:
         - mynetwork
       env_file:
         - .env
-      # 환경 변수 및 볼륨 설정(필요한 경우)
+
 
   mongodb_service:
-    image: mongo:6.0
+    container_name: mongodb_service
+    build:
+      context: ./mongodb_service
     ports:
       - "27017:27017"
     networks:
@@ -66,19 +71,16 @@ services:
     env_file:
       - .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGODB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
 
-  frontend_service:
-    build: ./frontend_service
-    ports:
-      - "3000:3000"
-  # FastAPI 서비스 정의
-    networks:
-    - mynetwork
+
 
   data_api_service:
+    container_name: data_api_service
     build: ./data_api_service
     ports:
       - "8001:8000"
@@ -88,6 +90,15 @@ services:
       - .env
     networks:
       - mynetwork
+
+  frontend_service:
+    container_name: frontend_service
+    build: ./frontend_service
+    ports:
+      - "3000:3000"
+  # FastAPI 서비스 정의
+    networks:
+    - mynetwork
 
 networks:
   mynetwork: {}

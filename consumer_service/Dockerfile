@@ -1,35 +1,24 @@
+FROM python:3.9
 
-FROM openjdk:11-jre-slim
+# # Java 설치 확인 (이미 Java가 설치되어 있다면 이 부분은 생략 가능)
+# RUN apt-get update && \
+#     apt-get install -y openjdk-11-jre-headless && \
+#     apt-get clean;
 
-# Java 환경 변수 설정
-ENV JAVA_HOME=/usr/local/openjdk-11
-ENV PATH=$JAVA_HOME/bin:$PATH
+# 필요한 추가 패키지 설치
+# RUN apt-get update && \
+#     apt-get install -y wget && \
+#     apt-get clean;
 
-RUN apt-get update && \
-    apt-get install -y wget && \
-    wget https://downloads.apache.org/spark/spark-3.3.4/spark-3.3.4-bin-hadoop2.tgz && \
-    tar -xvzf spark-3.3.4-bin-hadoop2.tgz && \
-    mv spark-3.3.4-bin-hadoop2 /opt/spark && \
-    rm spark-3.3.4-bin-hadoop2.tgz
-
-
-# Install Python and other required packages
-RUN apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
-
-# Install PySpark and other required Python packages
+# PySpark 및 기타 필요한 Python 패키지 설치
 COPY requirements.txt /app/
 WORKDIR /app
-
-
 RUN pip3 install -r requirements.txt
 
-# Spark 환경 변수 설정 (여기서 SPARK_HOME은 Spark 설치 위치에 따라 달라질 수 있음)
-# 예를 들어, Spark이 /opt/spark에 설치된 경우:
-ENV SPARK_HOME=/opt/spark
-ENV PATH=$SPARK_HOME/bin:$PATH
+# Spark 환경 변수 설정 (이미지에 따라 SPARK_HOME이 이미 설정되어 있을 수 있으므로 확인 필요)
+
 
 # PySpark 스크립트 복사
 COPY kafka_consumer.py /app/
-
 
 CMD ["python3", "kafka_consumer.py"]

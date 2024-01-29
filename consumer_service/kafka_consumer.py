@@ -1,46 +1,45 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StructType, StringType
+from kafka import KafkaConsumer
+import pymongo
+import json
 import os
-
-
-# kafka_server = os.environ.get('KAFKA_SERVER') 
-# mediastack_api_key = os.environ.get('MEDIASTACK_API_KEY')
-
-
-
+import time
+# 환경 변수에서 설정 값 로드
 KAFKA_TOPIC = os.environ.get('KAFKA_TOPIC') 
 KAFKA_SERVER = os.environ.get('KAFKA_SERVER') 
-MONGODB_URI = os.environ.get('MONGODB_URI') 
+MONGODB_URI = os.environ.get('MONGODB_URI')
+MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION')
+MONGODB_GROUP_ID = os.environ.get('MONGODB_GROUP_ID')
+
+
 
 
 def main():
-    spark = SparkSession.builder \
-        .appName("KafkaConsumerApp") \
-        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1, org.mongodb.spark:mongo-spark-connector_2.12:3.1.1") \
-        .getOrCreate()
+    time.sleep(60)
+    # MongoDB 클라이언트 설정
+    client = pymongo.MongoClient(MONGODB_URI)
+    db = client.get_default_database()
+    
+    # MongoDB에 컬렉션이 존재하는지 확인
+    if MONGODB_COLLECTION not in db.list_collection_names():
+        print(f"Creating new collection: {MONGODB_COLLECTION}")
+    
+    collection = db[MONGODB_COLLECTION]
 
-    # Define the schema of the data
-    schema = StructType() \
-        .add("title", StringType()) \
-        .add("content", StringType())
+    # Kafka Consumer 설정
+    consumer = KafkaConsumer(
+        KAFKA_TOPIC,
+        bootstrap_servers=[KAFKA_SERVER],
+        auto_offset_reset='earliest',
+        enable_auto_commit=True,
+        group_id=MONGODB_GROUP_ID,  # 적절한 그룹 ID로 변경
+        value_deserializer=lambda x: json.loads(x.decode('utf-8')))
 
-    # Create DataFrame representing the stream of input lines from Kafka
-    df = spark.readStream \
-        .format("kafka") \
-        .option("kafka.bootstrap.servers", KAFKA_SERVER) \
-        .option("subscribe", KAFKA_TOPIC) \
-        .load() \
-        .select(from_json(col("value").cast("string"), schema).alias("data")) \
-        .select("data.*")
-
-    # Write the stream to MongoDB
-    query = df.writeStream \
-        .format("com.mongodb.spark.sql.DefaultSource") \
-        .option("uri", MONGODB_URI) \
-        .start()
-
-    query.awaitTermination()
+    # Kafka에서 메시지 읽기 및 MongoDB에 저장
+    for message in consumer:
+        msg_data = message.value
+        print("Received message:", msg_data)
+        # MongoDB에 데이터 삽입
+        collection.insert_one(msg_data)
 
 if __name__ == "__main__":
     main()

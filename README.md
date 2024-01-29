@@ -60,6 +60,13 @@
 
 
 
+api_call은 kafka에 외부api(news)를 가져온 데이터를 넣는 컨테이너(현재1개)
+zookeeper_service는 주키퍼
+kafka_service는 카프카서비스
+consumer_service는 카프카에서 가져와서 몽고디비에 데이터를 넣는작업(현재 1개)
+data_api_service 는 프런트에 데이터를 제공하는 FAST-API (python3)
+frontend_service 는 뉴스데이터를 표시해주는 피드 프런트 (react)
+
 
 트러블 슈팅 사항 : 
 
