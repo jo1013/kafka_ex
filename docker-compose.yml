@@ -71,14 +71,13 @@ services:
     env_file:
       - .env
     environment:
-      MONGODB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
-      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
-      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      - MONGODB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME}
+      - MONGODB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_COLLECTION=${MONGODB_COLLECTION}
     volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-
-
-
+      - .mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+ 
   data_api_service:
     container_name: data_api_service
     build: ./data_api_service
