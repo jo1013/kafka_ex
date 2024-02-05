@@ -1,5 +1,5 @@
 from kafka import KafkaConsumer
-import pymongo
+from pymongo import MongoClient
 import json
 import os
 import time
@@ -16,7 +16,7 @@ MONGODB_GROUP_ID = os.environ.get('MONGODB_GROUP_ID')
 def main():
     time.sleep(60)
     # MongoDB 클라이언트 설정
-    client = pymongo.MongoClient(MONGODB_URI)
+    client = MongoClient(MONGODB_URI)
     db = client.get_default_database()
     
     # MongoDB에 컬렉션이 존재하는지 확인

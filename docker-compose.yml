@@ -76,8 +76,7 @@ services:
       - MONGODB_DATABASE=${MONGODB_DATABASE}
       - MONGODB_COLLECTION=${MONGODB_COLLECTION}
     volumes:
-      - .mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
- 
+    - ./mongodb_service/mongodb_data:/data/db
   data_api_service:
     container_name: data_api_service
     build: ./data_api_service

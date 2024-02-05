@@ -74,3 +74,17 @@ m1은 arm64 라서 confluent에서 제공하는 이미지는 사용할수없다 
 
 참고 : https://github.com/arm64-compat/confluent-platform?tab=readme-ov-file
 https://devkhk.tistory.com/32
+
+
+### 몽고디비 환경세팅 과정
+$ docker exec -it mongodb_service bash
+$ mongosh
+'''
+use news_admin
+db.createUser({
+    user: "myUser",
+    pwd: "myUserPassword",
+    roles: [{ role: "readWrite", db: "myNewDatabase" }]
+})
+db.createCollection("myCollection")
+'''

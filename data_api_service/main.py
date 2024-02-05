@@ -4,24 +4,28 @@ from pymongo.errors import ServerSelectionTimeoutError
 import os
 import time
 
+
+KAFKA_TOPIC = os.environ.get('KAFKA_TOPIC') 
+KAFKA_SERVER = os.environ.get('KAFKA_SERVER') 
+MONGODB_URI = os.environ.get('MONGODB_URI')
+MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION')
+MONGODB_GROUP_ID = os.environ.get('MONGODB_GROUP_ID')
+MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE')
+
 # 환경 변수에서 설정 값 로드
 time.sleep(60)
     
 app = FastAPI()
 
-# MongoDB에 연결
-client = MongoClient(
-    host=os.environ["MONGODB_HOST"],
-    port=os.environ["MONGODB_PORT"],
-    username=os.environ["MONGODB_ROOT_USERNAME"],
-    password=os.environ["MONGODB_ROOT_PASSWORD"],
-)
-db = client[os.environ["MONGODB_DATABASE"]]
+
+client = MongoClient(MONGODB_URI)
+
+db = client[MONGODB_DATABASE]
+collection = db.get_collection(MONGODB_COLLECTION)
 
 @app.get("/")
 def read_root():
-
-    news_data = db.news.find_one({})
+    news_data = collection.find_one({})
     return {"NewsData": news_data}
 
 @app.get("/healthcheck")
