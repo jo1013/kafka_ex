@@ -1,33 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import NewsCard from './components/NewsCard';
-import { fetchNews } from './api/newApi';
+import { fetchNews } from './api/newApi'; // API 호출 함수가 정의된 경로 확인 필요
 
 function App() {
   const [newsData, setNewsData] = useState([]);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      const response = await fetchNews(); // API 호출로부터 응답 받기
-      const data = response.NewsData; // 응답 객체에서 실제 뉴스 데이터 추출
-      if (Array.isArray(data)) { // data가 배열인 경우 직접 설정
-        setNewsData(data);
-      } else {
-        setNewsData([data]); // data가 단일 객체인 경우 배열로 변환
-      }
-    };
-    loadData();
-  }, []);
+
+useEffect(() => {
+const loadData = async () => {
+    try {
+    const data = await fetchNews(); // API 호출 및 데이터 직접 받기
+    if (data && Array.isArray(data.NewsData)) {
+        setNewsData(data.NewsData);
+    } else {
+        setError("데이터 형식이 올바르지 않습니다.");
+    }
+    } catch (e) {
+    setError(`데이터 로딩 중 오류 발생: ${e.message}`);
+    }
+};
+loadData();
+}, []);
 
   return (
     <div className="App">
       <h1>실시간 뉴스 피드 시스템</h1>
+      {error && <p className="error">{error}</p>}
       {newsData.map(news => (
         <NewsCard 
-        key={news.id} // 'id' 대신 '_id'를 사용해야 할 수 있음
-        title={news.title} 
-        content={news.description} // 'content' 대신 'description' 사용
-        imageUrl={news.image} // 'imageUrl' 대신 'image' 사용
-      />
+          key={news.id || news._id} // MongoDB의 ObjectId('_id')를 고려
+          title={news.title} 
+          content={news.description || '설명 없음'} 
+          imageUrl={news.image || '기본 이미지 URL'} // 기본 이미지 URL 추가
+        />
       ))}
     </div>
   );

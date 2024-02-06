@@ -53,7 +53,7 @@ class PyObjectId(ObjectId):
 # MongoDB 문서를 나타내는 Pydantic 모델
 class NewsData(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    author: str
+    author: Optional[str] = None  # author 필드를 Optional로 변경
     title: str
     description: Optional[str] = None
     url: HttpUrl
@@ -80,6 +80,34 @@ async def read_root():
         # MongoDB 문서를 Pydantic 모델로 변환
         return {"NewsData": NewsData(**news_data)}
     return {"NewsData": "No data found"}
+
+
+@app.get("/news")
+async def get_news(limit: int = 10):
+    news_cursor = collection.find().limit(limit)  # limit 매개변수로 반환할 문서 수 제어
+    news_list = [NewsData(**json_util.loads(json_util.dumps(news_item))) for news_item in news_cursor]
+    return {"NewsData": news_list}
+
+@app.get("/news/paginated")
+async def get_paginated_news(page: int = 1, page_size: int = 10):
+    skip = (page - 1) * page_size
+    news_cursor = collection.find().skip(skip).limit(page_size)
+    news_list = [NewsData(**json_util.loads(json_util.dumps(news_item))) for news_item in news_cursor]
+    return {"NewsData": news_list}
+
+
+
+@app.get("/news/filter")
+async def get_filtered_news(category: Optional[str] = None, language: Optional[str] = None, limit: int = 10):
+    query = {}
+    if category:
+        query["category"] = category
+    if language:
+        query["language"] = language
+    news_cursor = collection.find(query).limit(limit)
+    news_list = [NewsData(**json_util.loads(json_util.dumps(news_item))) for news_item in news_cursor]
+    return {"NewsData": news_list}
+
 
 @app.get("/healthcheck")
 def mongodb_healthcheck():

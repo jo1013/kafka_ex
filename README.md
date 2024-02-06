@@ -181,7 +181,7 @@ db.createCollection("myCollection")
 
 Participants in this project will gain hands-on experience with Kafka, real-time data processing, system design and deployment, and full-stack development, from data collection to frontend presentation and system monitoring.
 
-프로젝트 설명을 바탕으로 실시간 뉴스 피드 시스템에 대한 README 내용을 정리하였습니다. 이 README는 프로젝트의 목적, 단계별 설치 안내, 추가 기능, 실행 방법, 그리고 특히 M1 Mac 사용자를 위한 ARM64 호환성 문제에 대한 문제 해결 팁을 포함합니다.
+
 
 ---
 
@@ -269,6 +269,3 @@ db.createCollection("myCollection")
 
 이 프로젝트에 참여하는 사람들은 Kafka의 기본 사용법, 실시간 데이터 처리, 시스템 설계 및 배포, 데이터 수집부터 프론트엔드 표시, 시스템 모니터링에 이르기까지 전반적인 개발 프로세스에 대한 실질적인 경험을 얻을 수 있습니다.
 
----
-
-이 README는 실시간 뉴스 피드 시스템을 설정하고 실행하기 위한 종합적인 안내서를 제공합니다. `kafka_ex_copy.zip` 파일에 포함된 특정 세부 사항을 README에 포함하거나 조정해야 하는 경우 알려주시면, 그 세부 사항을 통합하는 데 도움을 드릴 수 있습니다.
