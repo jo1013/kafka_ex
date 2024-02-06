@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_ENDPOINT = 'data_api_service:8000'; // 예시 API 엔드포인트
+const API_ENDPOINT = 'http://localhost:8001'; 
 
 export const fetchNews = async () => {
   try {
