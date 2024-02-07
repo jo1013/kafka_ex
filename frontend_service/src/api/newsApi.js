@@ -14,3 +14,14 @@ export const fetchNews = async () => {
     throw error; 
   }
 };
+
+
+export const fetchNewsDetail = async (id) => {
+  try {
+  const response = await axios.get(`http://localhost:8001/news/details/${id}`);
+  return response.data.NewsData;
+} catch (error) {
+  console.error('Failed to fetch news details:', error);
+  throw error;
+}
+};

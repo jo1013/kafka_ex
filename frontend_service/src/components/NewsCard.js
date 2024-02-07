@@ -1,15 +1,22 @@
+// src/components/NewsCard.js
 import React from 'react';
-import '../styles/NewsCard.css';
+import { Link } from 'react-router-dom';
+import './NewsCard.css';
 
-function NewsCard({ title, content, imageUrl }) {
+
+
+
+function NewsCard({ id, title, imageUrl }) {
   return (
-    <div className="news-card">
-      <img src={imageUrl} alt="News" className="news-image"/>
-      <div className="news-content">
-        <h3>{title}</h3>
-        <p>{content}</p>
+    <Link to={`/news/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+
+      <div className="newsCard">
+        <img src={imageUrl || '기본 이미지 URL'} alt={title} className="newsImage" />
+        <div className="newsContent">
+          <h3>{title}</h3>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

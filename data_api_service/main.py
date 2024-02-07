@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Path
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, HttpUrl
 from datetime import datetime
 from typing import Optional
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
-from bson import ObjectId, json_util
+from bson import ObjectId, json_util, errors
 import os
 import json
 
@@ -107,6 +107,23 @@ async def get_filtered_news(category: Optional[str] = None, language: Optional[s
     news_cursor = collection.find(query).limit(limit)
     news_list = [NewsData(**json_util.loads(json_util.dumps(news_item))) for news_item in news_cursor]
     return {"NewsData": news_list}
+
+
+
+@app.get("/news/details/{news_id}")
+async def get_news_details(news_id: str):
+    try:
+        oid = ObjectId(news_id)  # ObjectId 생성 시도
+    except errors.InvalidId:
+        # 유효하지 않은 경우, 오류 메시지와 함께 400 응답 반환
+        raise HTTPException(status_code=400, detail="Invalid ObjectId format.")
+
+    news_item = collection.find_one({"_id": oid})
+    if news_item:
+        return {"NewsData": NewsData(**json_util.loads(json_util.dumps(news_item)))}
+    else:
+        raise HTTPException(status_code=404, detail=f"News item with ID {news_id} not found")
+
 
 
 @app.get("/healthcheck")

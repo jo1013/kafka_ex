@@ -1,0 +1,19 @@
+/* src/components/NewsCard.css */
+
+.newsCard {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .newsImage {
+    width: 100px; /* 썸네일 크기 조정 */
+    height: 100px;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  .newsContent h3 {
+    margin: 0;
+  }
+  
