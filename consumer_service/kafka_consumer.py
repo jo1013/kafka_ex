@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import json
 import os
 import time
+
 # 환경 변수에서 설정 값 로드
 KAFKA_TOPIC = os.environ.get('KAFKA_TOPIC') 
 KAFKA_SERVER = os.environ.get('KAFKA_SERVER') 
@@ -10,11 +11,8 @@ MONGODB_URI = os.environ.get('MONGODB_URI')
 MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION')
 MONGODB_GROUP_ID = os.environ.get('MONGODB_GROUP_ID')
 
-
-
-
 def main():
-    time.sleep(60)
+    time.sleep(60)  # 시작 지연
     # MongoDB 클라이언트 설정
     client = MongoClient(MONGODB_URI)
     db = client.get_default_database()
@@ -38,8 +36,14 @@ def main():
     for message in consumer:
         msg_data = message.value
         print("Received message:", msg_data)
-        # MongoDB에 데이터 삽입
-        collection.insert_one(msg_data)
+        
+        # URL 컬럼 기준 중복 확인
+        if collection.find_one({'url': msg_data.get('url')}) is None:
+            # MongoDB에 데이터 삽입
+            collection.insert_one(msg_data)
+            print(f"Inserted new document with URL: {msg_data.get('url')}")
+        else:
+            print(f"Document with URL: {msg_data.get('url')} already exists. Skipping insertion.")
 
 if __name__ == "__main__":
     main()

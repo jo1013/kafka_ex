@@ -269,3 +269,38 @@ db.createCollection("myCollection")
 
 이 프로젝트에 참여하는 사람들은 Kafka의 기본 사용법, 실시간 데이터 처리, 시스템 설계 및 배포, 데이터 수집부터 프론트엔드 표시, 시스템 모니터링에 이르기까지 전반적인 개발 프로세스에 대한 실질적인 경험을 얻을 수 있습니다.
 
+
+
+.env 정의 방법 
+
+
+# Mediastack
+MEDIASTACK_API_KEY=odspkfpodsfk 
+
+#Kafka 
+KAFKA_SERVER=kafka_service:29092
+KAFKA_TOPIC = "car"
+
+
+
+#Mongo
+MONGODB_ROOT_USERNAME=admin
+MONGODB_ROOT_PASSWORD=LSsdafokp#$OPKodpwsfkopSDFjupo
+MONGODB_DATABASE=news
+MONGODB_URI=mongodb://admin:LSsdafokp#$OPKodpwsfkopSDFjupo@mongodb_service:27017/news
+MONGODB_HOST=mongodb_service
+MONGODB_PORT=27017
+
+
+MONGODB_GROUP_ID=news
+MONGODB_COLLECTION=news
+
+위와 같은형태로 보안을 위한 .env파일 세팅
+
+.gitignore 세팅
+
+'''
+.env
+mongodb_service/mongodb_data/
+*.log
+'''
