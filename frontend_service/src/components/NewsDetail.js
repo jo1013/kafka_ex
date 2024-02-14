@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchNewsDetail } from '../api/newsApi'; // 가정: API 호출 함수
-
+import '../styles/NewsDetail.css';
 function NewsDetail() {
   const { id } = useParams();
   const [newsDetail, setNewsDetail] = useState(null);
@@ -35,12 +35,12 @@ function NewsDetail() {
 
   return (
 
-    <div>
-    <h2>{newsDetail.title}</h2>
-    <img src={newsDetail.image || '기본 이미지 URL'} alt={newsDetail.title} />
-    <p>{newsDetail.description}</p>
-    <a href={newsDetail.url} target="_blank" rel="noopener noreferrer">원문 보기</a>
-  </div>
+    <div className="detailContainer">
+      <h2 className="detailTitle">{newsDetail.title}</h2>
+      <img src={newsDetail.image || '기본 이미지 URL'} alt={newsDetail.title} className="detailImage" />
+      <p className="detailDescription">{newsDetail.description}</p>
+      <a href={newsDetail.url} className="detailLink" target="_blank" rel="noopener noreferrer">원문 보기</a>
+    </div>
   );
 }
 

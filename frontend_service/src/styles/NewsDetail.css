@@ -1,0 +1,41 @@
+/* NewsDetail.css */
+.detailContainer {
+    margin: 20px auto;
+    max-width: 800px; /* 콘텐츠의 최대 너비를 설정 */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    border-radius: 8px; /* 모서리 둥글게 */
+  }
+  
+  .detailTitle {
+    color: #333; /* 제목 색상 */
+    margin-bottom: 20px; /* 제목 아래 여백 */
+  }
+  
+  .detailImage {
+    width: 100%; /* 이미지 너비 */
+    height: auto; /* 이미지 높이 자동 조절 */
+    border-radius: 8px; /* 이미지 모서리 둥글게 */
+    margin-bottom: 20px; /* 이미지 아래 여백 */
+  }
+  
+  .detailDescription {
+    text-align: justify; /* 본문 정렬 */
+    line-height: 1.6; /* 줄 간격 */
+    margin-bottom: 20px; /* 본문 아래 여백 */
+  }
+  
+  .detailLink {
+    display: inline-block; /* 링크 스타일 */
+    background-color: #007bff; /* 배경 색상 */
+    color: white; /* 글자 색상 */
+    padding: 10px 15px; /* 패딩 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    text-decoration: none; /* 밑줄 제거 */
+    transition: background-color 0.2s; /* 호버 효과 */
+  }
+  
+  .detailLink:hover {
+    background-color: #0056b3; /* 링크 호버 색상 변경 */
+  }
+  

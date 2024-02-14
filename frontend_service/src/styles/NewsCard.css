@@ -1,25 +1,29 @@
-.news-card {
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin: 10px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .news-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
-    margin-right: 20px;
-  }
-  
-  .news-content h3 {
-    margin: 0;
-    font-size: 1.2em;
-  }
-  
-  .news-content p {
-    margin: 10px 0 0 0;
-  }
-  
+.newsCard {
+  display: flex;
+  flex-direction: column;
+  width: 300px; /* 카드의 너비 고정 */
+  height: 400px; /* 카드의 높이 고정 */
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin: 10px;
+  text-align: left;
+  background-color: #fff;
+}
+
+.newsImage {
+  height: 200px; /* 이미지 영역의 높이 고정 */
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.newsContent {
+  padding: 20px;
+  flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
+}
+
+.newsContent h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}

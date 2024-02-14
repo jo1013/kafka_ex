@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NewsCard from './components/NewsCard';
 import NewsDetail from './components/NewsDetail';
 import { fetchNews } from './api/newsApi';
+import './styles/App.css'; // 스타일 임포트
 
 function App() {
   const [newsData, setNewsData] = useState([]);
@@ -35,12 +36,14 @@ function App() {
         <Route path="/" exact>
           <div className="App">
             <h1>실시간 뉴스 피드 시스템</h1>
-            {newsData.map((news, index) => (
-              <NewsCard key={index} id={news._id} title={news.title} imageUrl={news.image} />
-            ))}
+            <div className="newsList">
+              {newsData.map((news, index) => (
+                <NewsCard key={index} id={news._id} title={news.title} imageUrl={news.image} />
+              ))}
+            </div>
           </div>
         </Route>
-        <Route path="/news/:id" component={NewsDetail} /> {/* 경로 수정 */}
+        <Route path="/news/:id" component={NewsDetail} />
       </Switch>
     </Router>
   );

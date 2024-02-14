@@ -1,0 +1,16 @@
+.App {
+  text-align: center;
+  margin: 20px;
+}
+
+.App h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.newsList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}

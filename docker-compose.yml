@@ -11,7 +11,10 @@ services:
       - kafka_service  # Kafka 서비스에 의존성 추가
     networks:
       - mynetwork
+    volumes:
+    - ./api_call/app:/app
 
+    
   zookeeper_service:
     container_name: zookeeper_service
     image: ghcr.io/arm64-compat/confluentinc/cp-zookeeper:7.1.1 # m1용 이미지
@@ -41,8 +44,9 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1' # 일반적으로 3으로 설정
       KAFKA_MIN_INSYNC_REPLICAS: '1'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     networks:
       - mynetwork
 
