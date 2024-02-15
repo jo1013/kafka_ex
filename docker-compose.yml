@@ -1,10 +1,10 @@
 version: '3'
 services:
 
-  api_call:
-    container_name: api_call
+  mediastack_api_call:
+    container_name: mediastack_api_call
     build: 
-      context: ./api_call
+      context: ./mediastack_api_call
     env_file:
       - .env
     depends_on:
@@ -12,9 +12,22 @@ services:
     networks:
       - mynetwork
     volumes:
-    - ./api_call/app:/app
+    - ./mediastack_api_call/app:/app
 
-    
+  gnews_api_call:
+    container_name: gnews_api_call
+    build: 
+      context: ./gnews_api_call
+    env_file:
+      - .env
+    depends_on:
+      - kafka_service  # Kafka 서비스에 의존성 추가
+    networks:
+      - mynetwork
+    volumes:
+    - ./gnews_api_call/app:/app
+
+
   zookeeper_service:
     container_name: zookeeper_service
     image: ghcr.io/arm64-compat/confluentinc/cp-zookeeper:7.1.1 # m1용 이미지
@@ -50,6 +63,20 @@ services:
     networks:
       - mynetwork
 
+  kafka_ui_service :
+
+    container_name: kafka_ui_service
+    build:
+      context: ./kafka_ui_service
+    ports:
+      - "8989:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=news_real_time_kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_service:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper_service:2181
+    networks:
+      - mynetwork
 
   consumer_service:
       container_name: consumer_service

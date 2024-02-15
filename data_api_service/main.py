@@ -14,7 +14,6 @@ KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
 KAFKA_SERVER = os.getenv('KAFKA_SERVER')
 MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_COLLECTION = os.getenv('MONGODB_COLLECTION')
-MONGODB_GROUP_ID = os.getenv('MONGODB_GROUP_ID')
 MONGODB_DATABASE = os.getenv('MONGODB_DATABASE')
 
 app = FastAPI()
@@ -86,9 +85,9 @@ async def read_root():
 async def get_news(limit: int = 10):
     # 집계 파이프라인 정의
     pipeline = [
+        {"$sort": {"published_at": -1}},  # published_at 기준 내림차순 정렬
         {"$group": {"_id": "$url", "document": {"$first": "$$ROOT"}}},  # URL 기준으로 그룹화하고 첫 번째 문서를 선택
         {"$replaceRoot": {"newRoot": "$document"}},  # 그룹화된 문서를 최상위로 이동
-        {"$sort": {"published_at": -1}},  # published_at 기준 내림차순 정렬
         {"$limit": limit}  # 최대 limit 개의 문서 제한
     ]
     news_cursor = collection.aggregate(pipeline)
