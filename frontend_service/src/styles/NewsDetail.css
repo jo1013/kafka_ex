@@ -38,4 +38,19 @@
   .detailLink:hover {
     background-color: #0056b3; /* 링크 호버 색상 변경 */
   }
-  
+  .goBackButton {
+    display: inline-block; /* 버튼을 인라인 블록 요소로 설정 */
+    margin-bottom: 20px; /* 버튼 아래 여백 */
+    background-color: #f8f9fa; /* 배경 색상 */
+    color: #007bff; /* 글자 색상 */
+    border: 1px solid #007bff; /* 테두리 색상 */
+    padding: 10px 15px; /* 내부 여백 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    text-decoration: none; /* 밑줄 제거 */
+    cursor: pointer; /* 커서 모양을 포인터로 변경 */
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out; /* 색상 변화 효과 */
+  }
+  .goBackButton:hover {
+    background-color: #007bff; /* 호버 시 배경 색상 변경 */
+    color: white; /* 호버 시 글자 색상 변경 */
+  }

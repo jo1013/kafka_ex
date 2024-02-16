@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, Path
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, HttpUrl
+from typing import List
 from datetime import datetime
 from typing import Optional
 from pymongo import MongoClient
@@ -35,12 +36,6 @@ db = client[MONGODB_DATABASE]
 collection = db.get_collection(MONGODB_COLLECTION)
 
 
-# for doc in collection.find({}):
-#     if isinstance(doc.get('source'), dict):
-#         # `source` 필드가 딕셔너리인 경우, `name` 필드의 값을 문자열로 설정
-#         source_name = doc['source'].get('name')
-#         collection.update_one({'_id': doc['_id']}, {'$set': {'source': source_name}})
-
 
 # Pydantic 모델에서 ObjectId를 처리하기 위한 클래스
 class PyObjectId(ObjectId):
@@ -71,12 +66,16 @@ class NewsData(BaseModel):
     country: Optional[str] = None  # 선택적으로 변경
     published_at: Optional[datetime] = None  # 선택적으로 변경
 
+    # class Config:
+    #     json_encoders = {
+    #         ObjectId: lambda obj: str(obj),
+    #         datetime: lambda dt: dt.isoformat() if dt else None
+    #     }
+    #     allow_population_by_alias = True
     class Config:
-        json_encoders = {
-            ObjectId: lambda obj: str(obj),
-            datetime: lambda dt: dt.isoformat() if dt else None
-        }
-        allow_population_by_alias = True
+        orm_mode = True
+        json_encoders = {ObjectId: str}
+
 
 @app.get("/")
 async def read_root():
@@ -89,27 +88,54 @@ async def read_root():
     return {"NewsData": "No data found"}
 
 
+# @app.get("/news")
+# async def get_news(limit: int = 10):
+#     pipeline = [
+#         {"$sort": {"published_at": -1}},
+#         {"$group": {"_id": "$url", "document": {"$first": "$$ROOT"}}},
+#         {"$replaceRoot": {"newRoot": "$document"}},
+#         {"$limit": limit}
+#     ]
+#     news_cursor = collection.aggregate(pipeline)
+#     news_list = []
+#     for news_item in news_cursor:
+#         # source 필드가 딕셔너리인 경우 변환
+#         if isinstance(news_item.get('source'), dict):
+#             news_item['source'] = news_item['source'].get('name', '')
+#         try:
+#             news_data = NewsData(**json_util.loads(json_util.dumps(news_item)))
+#             news_list.append(news_data)
+#         except ValidationError as e:
+#             logging.error(f"Validation error for item {news_item['_id']}: {e}")
+#             continue  # 유효하지 않은 항목은 건너뛰고 계속 진행
+#     return {"NewsData": news_list}
+
+
+
 @app.get("/news")
-async def get_news(limit: int = 10):
+async def get_news(page: int = 1, page_size: int = 5):
+    # 페이지네이션을 위한 계산
+    skip_amount = (page - 1) * page_size
+
     pipeline = [
         {"$sort": {"published_at": -1}},
-        {"$group": {"_id": "$url", "document": {"$first": "$$ROOT"}}},
-        {"$replaceRoot": {"newRoot": "$document"}},
-        {"$limit": limit}
+        {"$skip": skip_amount},  # 현재 페이지에 맞게 문서 건너뛰기
+        {"$limit": page_size},   # 페이지당 문서 수 제한
+        # 기타 필요한 집계 스테이지...
     ]
+
     news_cursor = collection.aggregate(pipeline)
     news_list = []
     for news_item in news_cursor:
-        # source 필드가 딕셔너리인 경우 변환
+        # 소스 필드 처리 및 Pydantic 모델로 변환
         if isinstance(news_item.get('source'), dict):
             news_item['source'] = news_item['source'].get('name', '')
-        try:
-            news_data = NewsData(**json_util.loads(json_util.dumps(news_item)))
-            news_list.append(news_data)
-        except ValidationError as e:
-            logging.error(f"Validation error for item {news_item['_id']}: {e}")
-            continue  # 유효하지 않은 항목은 건너뛰고 계속 진행
-    return {"NewsData": news_list}
+        news_data = NewsData(**news_item)
+        news_list.append(news_data)
+    
+    return news_list
+
+
 
 
 
