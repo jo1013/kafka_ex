@@ -34,6 +34,14 @@ client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
 db = client[MONGODB_DATABASE]
 collection = db.get_collection(MONGODB_COLLECTION)
 
+
+# for doc in collection.find({}):
+#     if isinstance(doc.get('source'), dict):
+#         # `source` 필드가 딕셔너리인 경우, `name` 필드의 값을 문자열로 설정
+#         source_name = doc['source'].get('name')
+#         collection.update_one({'_id': doc['_id']}, {'$set': {'source': source_name}})
+
+
 # Pydantic 모델에서 ObjectId를 처리하기 위한 클래스
 class PyObjectId(ObjectId):
     @classmethod
@@ -52,21 +60,21 @@ class PyObjectId(ObjectId):
 # MongoDB 문서를 나타내는 Pydantic 모델
 class NewsData(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    author: Optional[str] = None  # author 필드를 Optional로 변경
+    author: Optional[str] = None
     title: str
     description: Optional[str] = None
     url: HttpUrl
     source: str
     image: Optional[HttpUrl] = None
-    category: str
-    language: str
-    country: str
-    published_at: datetime
+    category: Optional[str] = None  # 선택적으로 변경
+    language: Optional[str] = None  # 선택적으로 변경
+    country: Optional[str] = None  # 선택적으로 변경
+    published_at: Optional[datetime] = None  # 선택적으로 변경
 
     class Config:
         json_encoders = {
             ObjectId: lambda obj: str(obj),
-            datetime: lambda dt: dt.isoformat()
+            datetime: lambda dt: dt.isoformat() if dt else None
         }
         allow_population_by_alias = True
 
@@ -83,16 +91,26 @@ async def read_root():
 
 @app.get("/news")
 async def get_news(limit: int = 10):
-    # 집계 파이프라인 정의
     pipeline = [
-        {"$sort": {"published_at": -1}},  # published_at 기준 내림차순 정렬
-        {"$group": {"_id": "$url", "document": {"$first": "$$ROOT"}}},  # URL 기준으로 그룹화하고 첫 번째 문서를 선택
-        {"$replaceRoot": {"newRoot": "$document"}},  # 그룹화된 문서를 최상위로 이동
-        {"$limit": limit}  # 최대 limit 개의 문서 제한
+        {"$sort": {"published_at": -1}},
+        {"$group": {"_id": "$url", "document": {"$first": "$$ROOT"}}},
+        {"$replaceRoot": {"newRoot": "$document"}},
+        {"$limit": limit}
     ]
     news_cursor = collection.aggregate(pipeline)
-    news_list = [NewsData(**json_util.loads(json_util.dumps(news_item))) for news_item in news_cursor]
+    news_list = []
+    for news_item in news_cursor:
+        # source 필드가 딕셔너리인 경우 변환
+        if isinstance(news_item.get('source'), dict):
+            news_item['source'] = news_item['source'].get('name', '')
+        try:
+            news_data = NewsData(**json_util.loads(json_util.dumps(news_item)))
+            news_list.append(news_data)
+        except ValidationError as e:
+            logging.error(f"Validation error for item {news_item['_id']}: {e}")
+            continue  # 유효하지 않은 항목은 건너뛰고 계속 진행
     return {"NewsData": news_list}
+
 
 
 @app.get("/news/paginated")
