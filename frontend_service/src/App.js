@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NewsCard from './components/NewsCard';
 import NewsDetail from './components/NewsDetail';
 import { fetchNews } from './api/newsApi';
@@ -7,9 +7,8 @@ import './styles/App.css'; // 스타일 임포트
 
 function App() {
   const [newsData, setNewsData] = useState([]);
-  const [error, setError] = useState(null);
+  const [setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageGroup, setPageGroup] = useState(1); // 페이지 그룹 (1~5, 6~10, ...)
   const itemsPerPage = 10;
   const [totalPages, setTotalPages] = useState(0);
   const pagesPerGroup = 5; // 페이지 그룹당 페이지 수
@@ -17,36 +16,34 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await fetchNews();
-        if (data && Array.isArray(data.NewsData)) {
-          const totalItems = data.NewsData.length;
-          setTotalPages(Math.ceil(totalItems / itemsPerPage));
-          setNewsData(data.NewsData);
-        } else {
-          setError("데이터 형식이 올바르지 않습니다.");
+        const data = await fetchNews(currentPage, itemsPerPage);
+        if (data && data.newsList && Array.isArray(data.newsList)) {
+          setTotalPages(Math.ceil(data.totalItems / itemsPerPage));
+          setNewsData(data.newsList);
+
         }
       } catch (e) {
         setError(`데이터 로딩 중 오류 발생: ${e.message}`);
       }
     };
     loadData();
-  }, []);
+  }, [currentPage, itemsPerPage, setError]);
 
-  const handlePreviousGroup = () => {
-    setPageGroup(pageGroup - 1);
-    setCurrentPage((pageGroup - 2) * pagesPerGroup + 1); // 이전 그룹의 첫 페이지로 이동
-  };
+  // 페이지 그룹 계산
+  const pageGroup = Math.ceil(currentPage / pagesPerGroup);
 
-  const handleNextGroup = () => {
-    setPageGroup(pageGroup + 1);
-    setCurrentPage(pageGroup * pagesPerGroup + 1); // 다음 그룹의 첫 페이지로 이동
-  };
-
-  // 현재 페이지 그룹 계산
+  // 현재 페이지 그룹에 따라 표시할 페이지 번호 계산
   const startPage = (pageGroup - 1) * pagesPerGroup + 1;
   const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages);
   const visiblePages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
+
+  const handlePageClick = (page) => {
+    console.log(`Page ${page} clicked`);
+    setCurrentPage(page);
+  };
+  
+  
   return (
     <Router>
       <Switch>
@@ -59,13 +56,12 @@ function App() {
               ))}
             </div>
             <div className="pagination">
-              {pageGroup > 1 && <button onClick={handlePreviousGroup}>이전 페이지</button>}
               {visiblePages.map(page => (
-                <button key={page} className={currentPage === page ? 'current' : ''} onClick={() => setCurrentPage(page)}>
+                <button key={page} className={currentPage === page ? 'current' : ''} onClick={() => 
+                  handlePageClick(page)}>
                   {page}
                 </button>
-              ))}
-              {endPage < totalPages && <button onClick={handleNextGroup}>다음 페이지</button>}
+              ))}                            
             </div>
           </div>
         </Route>
