@@ -4,6 +4,7 @@ import '../styles/NewsCard.css';
 
 function NewsCard({ id, title, imageUrl }) {
   // 이미지가 없는 경우 기본 이미지를 배경으로 사용하도록 설정
+  console.log(id, title, imageUrl); // props 확인을 위한 로그 출력
   const backgroundImageUrl = imageUrl ? `url(${imageUrl})` : `url('기본 이미지 URL')`;
 
   return (
