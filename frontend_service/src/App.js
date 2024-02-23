@@ -1,62 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import NewsCard from './components/NewsCard';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
+import NewsPage from './pages/NewsPage';
 import NewsDetail from './components/NewsDetail';
-import { fetchNews } from './api/newsApi';
-import './styles/App.css'; // 스타일 임포트
+// 기타 필요한 임포트
 
 function App() {
-  const [newsData, setNewsData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [error, setError] = useState(null);
-  const itemsPerPage = 10;
-  const pagesPerGroup = 5;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await fetchNews(currentPage, itemsPerPage);
-        console.log(data); // 로딩된 데이터 로그
-        if (data && data.newsList && Array.isArray(data.newsList)) {
-          setTotalPages(Math.ceil(data.totalItems / itemsPerPage));
-          setNewsData(data.newsList);
-        }
-      } catch (e) {
-        setError(`데이터 로딩 중 오류 발생: ${e.message}`);
-      }
-    };
-    loadData();
-  }, [currentPage, itemsPerPage]);
-
-  const handlePageClick = (page) => {
-    console.log(`Page ${page} clicked`);
-    setCurrentPage(page);
+  const onLoginSuccess = () => {
+    setIsLoggedIn(true);
   };
 
   return (
     <Router>
       <Switch>
-        <Route path="/" exact>
-          <div className="App">
-            <h1>실시간 뉴스 피드 시스템</h1>
-            {error && <p className="error">{error}</p>}
-            <div className="newsList">
-              {newsData.map((news, index) => {
-                return <NewsCard key={news._id} id={news._id} title={news.title} imageUrl={news.image} />;
-              })}
-            </div>
-            <div className="pagination">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button key={page} className={currentPage === page ? 'current' : ''} onClick={() => handlePageClick(page)}>
-                  {page}
-                </button>
-              ))}
-            </div>
-            <p>현재 페이지: {currentPage}</p>
-          </div>
+        {/* 로그인 페이지. 이미 로그인한 경우 메인 페이지로 리디렉션 */}
+        <Route path="/login">
+          {isLoggedIn ? <Redirect to="/news" /> : <LoginPage onLoginSuccess={onLoginSuccess} />}
         </Route>
+        {/* 회원가입 페이지 */}
+        <Route path="/signup" component={SignUpPage} />
+        {/* 뉴스 상세 페이지 */}
         <Route path="/news/:id" component={NewsDetail} />
+        {/* 메인 페이지 (뉴스 목록 페이지로 사용) */}
+        <Route path="/news" exact component={NewsPage} />
+        {/* 기본 경로 설정. 로그인하지 않은 경우 로그인 페이지로 리디렉션 */}
+        <Route exact path="/">
+          {isLoggedIn ? <Redirect to="/news" /> : <Redirect to="/login" />}
+        </Route>
+        {/* 기타 라우트 설정 */}
       </Switch>
     </Router>
   );

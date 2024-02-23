@@ -1,5 +1,6 @@
 from kafka import KafkaConsumer
 from pymongo import MongoClient
+from datetime import datetime
 import json
 import os
 import time
@@ -40,6 +41,7 @@ def main():
             msg_data = message.value
             print("Received message:", msg_data)
             msg_data['topic'] = topic
+            msg_data['create_at'] = datetime.utcnow()
             # URL 컬럼 기준 중복 확인
             if collection.find_one({'url': msg_data.get('url')}) is None:
                 # MongoDB에 데이터 삽입

@@ -1,0 +1,43 @@
+.App {
+  text-align: center;
+  margin: 20px;
+}
+
+.App h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.newsList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.pagination button, .logout-button {
+  margin: 0 5px; /* 버튼 간의 좌우 마진 추가 */
+  padding: 5px 10px; /* 버튼 내부 패딩 추가 */
+  background-color: #f0f0f0; /* 버튼 배경색 설정 */
+  border: 1px solid #ddd; /* 버튼 테두리 설정 */
+  border-radius: 5px; /* 버튼 모서리 둥글게 처리 */
+  cursor: pointer; /* 마우스 오버 시 커서 변경 */
+}
+
+.pagination button.current {
+  background-color: #007bff; /* 현재 페이지 버튼의 배경색 */
+  color: white; /* 현재 페이지 버튼의 글자색 */
+}
+
+.pagination button:hover, .logout-button:hover {
+  background-color: #0056b3; /* 버튼 호버 시 배경색 */
+  color: white; /* 버튼 호버 시 글자색 */
+}
+
+.logout-button {
+  background-color: #dc3545; /* 로그아웃 버튼 배경색 */
+}
+
+.logout-button:hover {
+  background-color: #c82333; /* 로그아웃 버튼 호버 시 배경색 */
+}
