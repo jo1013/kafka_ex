@@ -19,11 +19,12 @@ function NewsCard({ id, title, imageUrl }) {
         image={imageUrl || defaultImage}
         alt={title}
         sx={{
-          height: 140, // 높이는 필요에 따라 조정하세요.
-          objectFit: 'contain', // 이미지를 컨테이너에 맞게 조정하되, 비율을 유지합니다.
-          width: '100%', // 너비를 100%로 설정하여 컨테이너의 너비에 맞춥니다.
+          height: 140, // 고정된 높이
+          objectFit: 'cover', // 컨테이너를 꽉 채우도록 이미지 조정
+          width: '100%', // 너비를 100%로 설정
         }}
       />
+
         
         <CardContent>
           <Typography gutterBottom variant="h6" component="div">
