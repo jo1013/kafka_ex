@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom'; // Link 컴포넌트 임포트
-import NewsCard from '../components/NewsCard'; // 경로 확인 필요
-import { fetchNews } from '../api/newsApi'; // API 호출 함수의 경로 확인 필요
-import '../styles/NewsPage.css'; // CSS 파일의 경로 확인 필요
+import { useNavigate } from 'react-router-dom';
+import NewsCard from '../components/NewsCard';
+import { fetchNews } from '../api/newsApi';
 
 function NewsPage() {
     const [newsData, setNewsData] = useState([]);
@@ -10,58 +9,75 @@ function NewsPage() {
     const [totalPages, setTotalPages] = useState(0);
     const [error, setError] = useState(null);
     const itemsPerPage = 10;
+    const navigate = useNavigate();
 
-    const history = useHistory();
-
-    
     useEffect(() => {
         const loadData = async () => {
-          try {
-            const data = await fetchNews(currentPage, itemsPerPage);
-            if (data && data.newsList && Array.isArray(data.newsList)) {
-              setTotalPages(Math.ceil(data.totalItems / itemsPerPage));
-              setNewsData(data.newsList);
+            try {
+                const data = await fetchNews(currentPage, itemsPerPage);
+                if (data && data.newsList && Array.isArray(data.newsList)) {
+                    setTotalPages(Math.ceil(data.totalItems / itemsPerPage));
+                    setNewsData(data.newsList);
+                }
+            } catch (e) {
+                setError(`데이터 로딩 중 오류 발생: ${e.message}`);
             }
-          } catch (e) {
-            setError(`데이터 로딩 중 오류 발생: ${e.message}`);
-          }
         };
         loadData();
-      }, [currentPage]);
+    }, [currentPage]);
 
     const handlePageClick = (page) => {
         setCurrentPage(page);
     };
-    const handleLogout = () => {
-      // 로컬 스토리지에서 사용자 정보 제거
-      localStorage.removeItem('userToken');
-      // 로그인 페이지로 리디렉션
-      history.push('/login');
+
+    const handleNext = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
     };
+
+    const handlePrevious = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     return (
-        <div className="App">
-            <h1>실시간 뉴스 피드 시스템</h1>
-            {error && <p className="error">{error}</p>}
-            <button onClick={handleLogout}>로그아웃</button>
-            <div className="newsList">
-                {newsData.map((news) => {
-                    return (
-                        <Link to={`/news/${news._id}`} key={news._id}>
-                            <NewsCard id={news._id} title={news.title} imageUrl={news.image} />
-                        </Link>
-                    );
-                })}
-            </div>
-            <div className="pagination">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button key={page} className={currentPage === page ? 'current' : ''} onClick={() => handlePageClick(page)}>
-                        {page}
-                    </button>
+        <div className="max-w-screen-xl mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold text-center mb-8">Latest News</h1>
+            {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {newsData.map(news => (
+                    <NewsCard
+                        key={news._id}
+                        id={news._id}
+                        title={news.title}
+                        imageUrl={news.image}
+                    />
                 ))}
             </div>
-            <p>현재 페이지: {currentPage}</p>
+            <div className="flex justify-between items-center mt-8">
+                <button
+                    className={`px-4 py-2 text-lg font-semibold rounded-lg ${currentPage > 1 ? 'bg-blue-500 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                    onClick={handlePrevious}
+                    disabled={currentPage <= 1}
+                >
+                    Previous
+                </button>
+                <span className="text-lg">Page {currentPage} of {totalPages}</span>
+                <button
+                    className={`px-4 py-2 text-lg font-semibold rounded-lg ${currentPage < totalPages ? 'bg-blue-500 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                    onClick={handleNext}
+                    disabled={currentPage >= totalPages}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 }
 
 export default NewsPage;
+
+
+

@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom'; // useHistory 훅 임포트
-import '../styles/LoginPage.css';
-import { loginUser } from '../api/userApi'; // API 호출 함수 임포트
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/userApi';
 
-function LoginPage({ onLoginSuccess }) { // onLogin prop 제거
+function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory(); // useHistory 훅 사용
+  const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
       const data = await loginUser(email, password);
-      if (data && data.message === "Login successful") { // 로그인 성공 확인
+      if (data && data.message === "Login successful") {
         alert('로그인 성공!');
-        onLoginSuccess(true); // 로그인 성공 시 상태 업데이트 함수 호출
+        onLoginSuccess(true);
+        navigate('/news');
       } else {
-        // 이 조건은 실제로는 필요하지 않을 수 있습니다.
-        throw new Error('로그인에 실패했습니다.'); // 로그인 실패 처리
+        throw new Error('로그인에 실패했습니다.');
       }
     } catch (error) {
       alert(`로그인 실패: ${error.response?.data?.detail || error.message}`);
@@ -25,28 +24,34 @@ function LoginPage({ onLoginSuccess }) { // onLogin prop 제거
   };
 
   const navigateToSignUp = () => {
-    history.push('/signup'); // '/signup' 경로로 이동
+    navigate('/signup');
   };
 
   return (
-    <div className="login-container">
-      <h1>Login</h1>
-      <form onSubmit={handleLogin} className="login-form">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+      <h1 className="text-3xl font-semibold mb-6">Login</h1>
+      <form onSubmit={handleLogin} className="w-full max-w-xs">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 mb-4 text-gray-700 bg-white border rounded shadow"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 mb-4 text-gray-700 bg-white border rounded shadow"
         />
-        <div className="form-actions">
-          <button type="submit">Log In</button>
-          <button type="button" onClick={navigateToSignUp}>Sign Up</button>
+        <div className="flex justify-between items-center">
+          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors">
+            Log In
+          </button>
+          <button type="button" onClick={navigateToSignUp} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors">
+            Sign Up
+          </button>
         </div>
       </form>
     </div>
