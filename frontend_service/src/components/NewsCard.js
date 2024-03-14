@@ -1,34 +1,6 @@
-// import React from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-// function NewsCard({ id, title, imageUrl }) {
-//   const navigate = useNavigate();
-
-//   // 클릭 이벤트 핸들러: 뉴스 상세 페이지로 이동
-//   const handleClick = () => {
-//     navigate(`/news/${id}`);
-//   };
-
-//   return (
-//     <div onClick={handleClick} className="block cursor-pointer no-underline text-current transform transition duration-500 hover:scale-105">
-//       <div className="overflow-hidden rounded-lg shadow-lg">
-//         <img alt={title} src={imageUrl || 'your-default-image-url'} className="w-full h-48 object-cover"/>
-//         <div className="p-4 bg-white">
-//           <h3 className="font-semibold text-lg text-gray-800 mb-2">{title}</h3>
-//           <p className="text-gray-600 text-sm">Click to read more...</p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default NewsCard;
-
-
-
-// NewsCard.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
 
 function NewsCard({ id, title, imageUrl }) {
   const navigate = useNavigate();
@@ -39,19 +11,29 @@ function NewsCard({ id, title, imageUrl }) {
   };
 
   return (
-    <div onClick={handleClick} className="cursor-pointer block no-underline text-current transform transition duration-300 hover:scale-105">
-      <div className="overflow-hidden rounded-lg shadow-lg bg-white">
-        <img
-          alt={title}
-          src={imageUrl || defaultImage}
-          className="w-full h-48 object-cover" // 이미지 크기를 일관되게 유지
-        />
-        <div className="p-4">
-          <h3 className="font-semibold text-lg text-gray-800 mb-2">{title}</h3>
-          <p className="text-gray-600 text-sm">Click to read more...</p>
-        </div>
-      </div>
-    </div>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* CardActionArea에 onClick 이벤트 핸들러 추가 */}
+      <CardActionArea sx={{ flexGrow: 1 }} onClick={handleClick}>
+      <CardMedia
+        component="img"
+        image={imageUrl || defaultImage}
+        alt={title}
+        sx={{
+          height: 140, // 높이는 필요에 따라 조정하세요.
+          objectFit: 'contain', // 이미지를 컨테이너에 맞게 조정하되, 비율을 유지합니다.
+          width: '100%', // 너비를 100%로 설정하여 컨테이너의 너비에 맞춥니다.
+        }}
+      />
+        
+        <CardContent>
+          <Typography gutterBottom variant="h6" component="div">
+            {title}
+          </Typography>
+          {/* 내용 추가 */}
+        </CardContent>
+      </CardActionArea>
+      {/* 카드 액션 추가 (옵션) */}
+    </Card>
   );
 }
 
