@@ -196,3 +196,19 @@ M1 Mac 사용자는 ARM64 아키텍처로 인한 호환성 문제를 겪을 수 
 참여자들은 실시간 데이터 처리, 시스템 아키텍처 설계, 프런트엔드 개발, 배포 전략을 포함하여 실시간 뉴스 피드 시스템을 구축하고 관리하는 데 필요한 포괄적인 이해를 얻게 됩니다.
 
 ---
+
+zookeeper에서 아래와 같은 오류 발생시 
+
+
+===> User
+uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
+===> Configuring ...
+[Errno 28] No space left on device
+```
+docker system prune
+docker volume prune
+```
+
+
+
+<!-- updated_at 필드를 도입하여 데이터가 갱신된 시각을 기록하는 것은 데이터의 신뢰성과 추적 가능성을 향상시키는 좋은 방법입니다. 당신이 설명한 아키텍처에서 updated_at 필드를 추가하는 최적의 위치는 FastAPI를 통해 MongoDB에 데이터를 적재하는 단계입니다. 이렇게 하면 데이터가 MongoDB에 저장되거나 갱신될 때마다 updated_at 필드를 현재 시간으로 설정하여 데이터의 최신 상태를 정확하게 반영할 수 있습니다. -->

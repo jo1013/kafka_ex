@@ -12,7 +12,7 @@ COPY . .
 RUN npm install
 RUN npm install react-router-dom@6
 RUN npm install @mui/material @emotion/react @emotion/styled
-
+RUN npm install date-fns
 
 
 RUN npm run build

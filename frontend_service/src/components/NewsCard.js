@@ -1,15 +1,18 @@
 import React from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
 
-function NewsCard({ id, title, imageUrl }) {
+function NewsCard({ id, title, imageUrl, source, published_at}) {
   const navigate = useNavigate();
   const defaultImage = 'https://council.gb.go.kr/images/common/gb_wait.png'; // 기본 이미지 URL
 
   const handleClick = () => {
     navigate(`/news/${id}`);
   };
-
+  const timeAgo = published_at
+    ? formatDistanceToNow(new Date(published_at), { addSuffix: true })
+    : 'Date not available';  // 날짜 정보가 없는 경우의 대체 텍스트
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* CardActionArea에 onClick 이벤트 핸들러 추가 */}
@@ -29,11 +32,15 @@ function NewsCard({ id, title, imageUrl }) {
         <CardContent>
           <Typography gutterBottom variant="h6" component="div">
             {title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+            Source: {source}
           </Typography>
-          {/* 내용 추가 */}
+          <Typography variant="body2" color="text.secondary">
+            {timeAgo}
+          </Typography>
         </CardContent>
       </CardActionArea>
-      {/* 카드 액션 추가 (옵션) */}
     </Card>
   );
 }

@@ -112,21 +112,12 @@ class NewsResponse(BaseModel):
     totalItems: int
 
 
-# @app.get("/news", response_model=NewsResponse)
-# async def get_news(page: int = 1, page_size: int = 10):
-#     skip = (page - 1) * page_size
-#     news_cursor = collection.find().skip(skip).limit(page_size)
-#     news_list = [NewsData(**jsonable_encoder(news, custom_encoder={ObjectId: str})) for news in news_cursor]
-#     total_items = collection.count_documents({})
-#     return NewsResponse(newsList=news_list, totalItems=total_items)
-
-
 
 @app.get("/news", response_model=NewsResponse)
 async def get_news(page: int = 1, page_size: int = 10):
     skip = (page - 1) * page_size
     # .sort([("_id", DESCENDING)])를 추가하여 최신 뉴스부터 정렬
-    news_cursor = collection.find().sort([("_id", DESCENDING)]).skip(skip).limit(page_size)
+    news_cursor = collection.find().sort([("published_at", DESCENDING)]).skip(skip).limit(page_size)
     news_list = [NewsData(**jsonable_encoder(news, custom_encoder={ObjectId: str})) for news in news_cursor]
     total_items = collection.count_documents({})
     return NewsResponse(newsList=news_list, totalItems=total_items)
