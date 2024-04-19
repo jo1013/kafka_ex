@@ -1,64 +1,66 @@
+// NewsPage.js
 import React, { useEffect, useState, useRef } from 'react';
 import NewsCard from '../components/NewsCard';
+import SearchPage from '../components/SearchPage';
 import { fetchNews } from '../api/newsApi';
-import { Container, Grid, Typography } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, Grid } from '@mui/material';
+
+
+
 
 function NewsPage() {
     const [newsData, setNewsData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
+    const [tabValue, setTabValue] = useState(0);
     const loader = useRef(null);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const data = await fetchNews(currentPage, 12); // itemsPerPage를 12로 설정
-                if (data && data.newsList && Array.isArray(data.newsList)) {
-                    setNewsData(prevNews => [...prevNews, ...data.newsList]);
-                    setHasMore(data.totalItems > currentPage * 12);
-                    setCurrentPage(prevPage => prevPage + 1);
+                const data = await fetchNews();  // API 호출
+                if (data) {
+                    setNewsData(data.newsList);  // 데이터 세팅
                 }
-            } catch (e) {
-                console.error(`데이터 로딩 중 오류 발생: ${e.message}`);
+            } catch (error) {
+                console.error('데이터 로딩 실패:', error);
+                // 여기에서 사용자에게 오류 메시지를 보여주거나 다른 조치를 취할 수 있습니다.
+                // 예를 들어, 오류 메시지 상태를 설정하고 UI에 표시할 수 있습니다.
+                setError('뉴스를 로드하는 데 실패했습니다. 나중에 다시 시도해주세요.');
             }
         };
-
         loadData();
-    }, [currentPage]);
+    }, []);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && hasMore) {
-                setCurrentPage(prevPage => prevPage + 1);
-            }
-        });
-
-        if (loader.current) {
-            observer.observe(loader.current);
-        }
-
-        return () => observer.disconnect();
-    }, [hasMore]);
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
 
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
             <Typography variant="h4" component="h1" gutterBottom align="center">
                 Latest News
             </Typography>
-            <Grid container spacing={4}>
-                {newsData.map(news => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={news._id}>
-                        <NewsCard
-                            id={news._id}
-                            title={news.title}
-                            imageUrl={news.image}
-                            source={news.source} // Add source prop to each NewsCard
-                            published_at={news.published_at}  // published_at 값을 전달
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-            <div ref={loader} style={{ height: '100px', margin: '30px 0' }} />
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example">
+                    <Tab label="All News" />
+                    <Tab label="Search" />
+                </Tabs>
+            </Box>
+            {tabValue === 0 && (
+                <Grid container spacing={4}>
+                    {newsData.map(news => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={news._id}>
+                            <NewsCard
+                                id={news._id}
+                                title={news.title}
+                                imageUrl={news.image}
+                                source={news.source}
+                                published_at={news.published_at}
+                            />
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
+            {tabValue === 1 && <SearchPage newsData={newsData} />}
         </Container>
     );
 }

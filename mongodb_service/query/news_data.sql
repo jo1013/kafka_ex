@@ -1,0 +1,2 @@
+use news_data
+
