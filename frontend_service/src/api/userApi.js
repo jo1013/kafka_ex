@@ -1,7 +1,37 @@
+//userApi.js
 import axios from 'axios';
 
 // 사용자 관련 기능을 수행하는 서버의 기본 URL 설정
 const USER_API_ENDPOINT = 'http://localhost:8001/user';
+
+
+
+// 뉴스 클릭 이벤트를 기록하는 함수
+export const recordNewsClick = async (userId, newsId) => {
+  try {
+    const response = await axios.post(`${USER_API_ENDPOINT}/click`, {
+      user_id: userId,
+      news_id: newsId,
+      activity_type: 'click',
+      timestamp: new Date().toISOString()
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // 로컬 스토리지에서 토큰 가져오기
+      }
+    });
+
+    if (!response.data) {
+      throw new Error('Failed to record click');
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Failed to record click:', error);
+    throw error;
+  }
+};
+
 
 // 사용자 회원가입
 export const signupUser = async (email, password) => {

@@ -1,5 +1,5 @@
 // NewsPage.js
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import NewsCard from '../components/NewsCard';
 import SearchPage from '../components/SearchPage';
 import { fetchNews } from '../api/newsApi';
@@ -11,24 +11,53 @@ import { Container, Typography, Tabs, Tab, Box, Grid } from '@mui/material';
 function NewsPage() {
     const [newsData, setNewsData] = useState([]);
     const [tabValue, setTabValue] = useState(0);
+    const [page, setPage] = useState(1);  // 페이지 상태 추가
+    const [loading, setLoading] = useState(false);  // 로딩 상태 추가
+    const [hasMore, setHasMore] = useState(true);  // 더 로드할 데이터가 있는지
     const loader = useRef(null);
 
     useEffect(() => {
+        if (!hasMore || loading) return;  // 로딩 중이거나 더 이상 로드할 데이터가 없으면 호출 중지
+    
+        setLoading(true);  // 데이터 로딩 시작
         const loadData = async () => {
             try {
-                const data = await fetchNews();  // API 호출
-                if (data) {
-                    setNewsData(data.newsList);  // 데이터 세팅
+                const data = await fetchNews(page);  // 현재 페이지 번호를 파라미터로 전달
+                if (data && data.newsList.length > 0) {
+                    setNewsData(prev => [...prev, ...data.newsList]);
+                    setPage(prev => prev + 1);  // 데이터 로딩 후 페이지 번호 증가
+                } else {
+                    setHasMore(false);  // 데이터가 더 이상 없다면 로딩 중지
                 }
             } catch (error) {
                 console.error('데이터 로딩 실패:', error);
-                // 여기에서 사용자에게 오류 메시지를 보여주거나 다른 조치를 취할 수 있습니다.
-                // 예를 들어, 오류 메시지 상태를 설정하고 UI에 표시할 수 있습니다.
-                setError('뉴스를 로드하는 데 실패했습니다. 나중에 다시 시도해주세요.');
+            } finally {
+                setLoading(false);  // 로딩 상태 해제
             }
         };
         loadData();
-    }, []);
+    }, [page, hasMore, loading]);  // 의존성 배열에 page, hasMore, loading 추가
+    
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting && hasMore && !loading) {
+                    setPage(prev => prev + 1);  // 페이지 번호 증가
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (loader.current) {
+            observer.observe(loader.current);
+        }
+        return () => {
+            if (loader.current) {
+                observer.unobserve(loader.current);
+            }
+        };
+    }, [loader, hasMore]);
+
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -58,6 +87,7 @@ function NewsPage() {
                             />
                         </Grid>
                     ))}
+                   {hasMore && <div ref={loader} />}  // 로더 요소 표시 조건 추가
                 </Grid>
             )}
             {tabValue === 1 && <SearchPage newsData={newsData} />}
