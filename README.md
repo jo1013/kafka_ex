@@ -1,9 +1,8 @@
-
 # Real-time News Feed System
 
 ## Overview
 
-This project aims to build a system that collects, processes, and delivers news articles to users in real-time, leveraging the power of Kafka for data streaming, Docker for containerization, and MongoDB for data storage.
+This project is designed to collect, process, and deliver news articles to users in real-time, utilizing Kafka for data streaming, Docker for containerization, and MongoDB for data storage.
 
 ## System Components
 
@@ -17,22 +16,24 @@ This project aims to build a system that collects, processes, and delivers news 
 
 ## Features
 
-- **Real-time Data Collection**: Uses MediaStack API for gathering news articles.
-- **Data Processing**: Includes data cleaning and categorization using Python or Spark.
-- **Scalable Architecture**: Ensures scalability using a Kafka cluster.
+- **Real-time Data Collection**: Utilizes the MediaStack API for gathering news articles.
+- **Data Processing**: Performs data cleaning and categorization using Python or Spark.
+- **Scalable Architecture**: Uses a Kafka cluster to ensure system scalability.
 - **Security**: Implements security configurations for Kafka and databases.
-- **Monitoring**: Utilizes Kibana or Grafana for system monitoring.
+- **Monitoring**: Employs Kibana or Grafana for system monitoring.
+- **Subscription and Trending Features**: Allows users to subscribe to topics or view trending news based on user engagement.
+- **Search Functionality**: Enables users to search for news articles.
 
 ## Setup Instructions
 
 ### Prerequisites
 
-- Docker and Docker Compose installed
-- An account and API key from [MediaStack](https://mediastack.com/)
+- Docker and Docker Compose installed.
+- An account and API key from [MediaStack](https://mediastack.com/).
 
 ### Configuration
 
-1. **Environment Variables**: Create a `.env` file in the project root with the following content:
+1. **Environment Variables**: Create a `.env` file in the project root with essential configurations:
 
     ```env
     # Kafka
@@ -48,7 +49,7 @@ This project aims to build a system that collects, processes, and delivers news 
     MONGODB_URI=mongodb://admin:<your_mongodb_root_password>@mongodb_service:27017/news
     ```
 
-2. **`.gitignore` Configuration**: Ensure to exclude sensitive files:
+2. **`.gitignore` Configuration**: Ensure sensitive files are excluded:
 
     ```
     .env
@@ -58,7 +59,7 @@ This project aims to build a system that collects, processes, and delivers news 
 
 ### Running the System
 
-Execute the following command in your terminal:
+Execute the following command in your terminal to start all services:
 
 ```bash
 docker-compose up
@@ -66,14 +67,14 @@ docker-compose up
 
 ## MongoDB Setup
 
-After starting the MongoDB container, set up the initial database and user:
+After initializing the MongoDB container, configure the database and user:
 
 ```bash
 docker exec -it mongodb_service bash
 mongosh
 ```
 
-In the MongoDB shell, create the database and user:
+Then in the MongoDB shell:
 
 ```javascript
 use news_admin
@@ -87,23 +88,21 @@ db.createCollection("myCollection")
 
 ## ARM64 Compatibility Note
 
-For M1 Mac users, use ARM64-compatible Docker images. Refer to [ARM64 Compatible Confluent Platform](https://github.com/arm64-compat/confluent-platform?tab=readme-ov-file) for Kafka setup.
+#### For M1 Mac users, ensure to use ARM64-compatible Docker images. For Kafka setup, refer to [ARM64 Compatible Confluent Platform](https://github.com/arm64-compat/confluent-platform).
 
 ## Project Outcomes
 
-Participants will gain experience in real-time data processing, system architecture design, front-end development, and deployment strategies, providing a comprehensive understanding of building and managing a real-time news feed system.
-
+#### Participants will develop skills in real-time data processing, system architecture design, front-end development, and deployment strategies, gaining a comprehensive understanding of how to build and manage a real-time news feed system.
 ---
 
 
 
 ---
-
 # 실시간 뉴스 피드 시스템
 
 ## 개요
 
-이 프로젝트는 사용자에게 실시간으로 뉴스 기사를 수집, 처리, 제공하는 시스템을 구축하는 것을 목표로 합니다. 데이터 스트리밍을 위한 Kafka, 컨테이너화를 위한 Docker, 데이터 저장을 위한 MongoDB의 강력한 기능을 활용합니다.
+이 프로젝트는 사용자에게 실시간으로 뉴스 기사를 수집, 처리, 제공하는 시스템을 구축하는 것을 목표로 합니다. 데이터 스트리밍을 위한 Kafka, 컨테이너화를 위한 Docker, 데이터 저장을 위한 MongoDB를 활용합니다.
 
 ## 시스템 구성 요소
 
@@ -122,6 +121,8 @@ Participants will gain experience in real-time data processing, system architect
 - **확장 가능한 아키텍처**: Kafka 클러스터를 사용하여 시스템의 확장성을 보장합니다.
 - **보안**: Kafka 및 데이터베이스의 보안 설정을 구현합니다.
 - **모니터링**: 시스템 모니터링을 위해 Kibana 또는 Grafana를 사용합니다.
+- **구독 및 트렌딩 기능**: 사용자가 주제를 구독하거나 사용자 참여에 따라 트렌딩 뉴스를 볼 수 있습니다.
+- **검색 기능**: 사용자가 뉴스 기사를 검색할 수 있습니다.
 
 ## 설정 지침
 
@@ -158,7 +159,7 @@ Participants will gain experience in real-time data processing, system architect
 
 ### 시스템 실행
 
-터미널에서 다음 명령어를 실행합니다:
+터미널에서 다음 명령어를 실행하여 모든 서비스를 시작합니다:
 
 ```bash
 docker-compose up
@@ -166,14 +167,14 @@ docker-compose up
 
 ## MongoDB 설정
 
-MongoDB 컨테이너 시작 후 초기 데이터베이스와 사용자를 설정합니다:
+MongoDB 컨테이너를 초기화 한 후 데이터베이스와 사용자를 설정합니다:
 
 ```bash
 docker exec -it mongodb_service bash
 mongosh
 ```
 
-MongoDB 쉘에서 데이터베이스와 사용자 생성:
+MongoDB 쉘에서:
 
 ```javascript
 use news_admin
@@ -187,32 +188,8 @@ db.createCollection("myCollection")
 
 ## ARM64 호환성 참고 사항
 
-M1 Mac 사용자는 ARM64 아키텍처로 인한 호환성 문제를 겪을 수 있습니다. Kafka 설정을 위해 ARM64와 호환되는 Docker 이미지를 사용하세요. [ARM64 호환 Confluent
-
- 플랫폼](https://github.com/arm64-compat/confluent-platform?tab=readme-ov-file)을 참조하세요.
+M1 Mac 사용자는 ARM64 호환 Docker 이미지를 사용해야 합니다. Kafka 설정을 위해서는 [ARM64 호환 Confluent Platform](https://github.com/arm64-compat/confluent-platform)을 참조하세요.
 
 ## 프로젝트 성과
 
-참여자들은 실시간 데이터 처리, 시스템 아키텍처 설계, 프런트엔드 개발, 배포 전략을 포함하여 실시간 뉴스 피드 시스템을 구축하고 관리하는 데 필요한 포괄적인 이해를 얻게 됩니다.
-
----
-
-zookeeper에서 아래와 같은 오류 발생시 
-
-
-===> User
-uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
-===> Configuring ...
-[Errno 28] No space left on device
-```
-docker system prune
-docker volume prune
-```
-
-
-
-<!-- updated_at 필드를 도입하여 데이터가 갱신된 시각을 기록하는 것은 데이터의 신뢰성과 추적 가능성을 향상시키는 좋은 방법입니다. 당신이 설명한 아키텍처에서 updated_at 필드를 추가하는 최적의 위치는 FastAPI를 통해 MongoDB에 데이터를 적재하는 단계입니다. 이렇게 하면 데이터가 MongoDB에 저장되거나 갱신될 때마다 updated_at 필드를 현재 시간으로 설정하여 데이터의 최신 상태를 정확하게 반영할 수 있습니다. -->
-
-구독 기능  / 사용자가 많이보는 것을 기능으로 추가
-
-검색 기능 / 사용자가 검색해서 뉴스를 찾아볼수잇음
+참여자들은 실시간 데이터 처리, 시스템 아키텍처 설계, 프론트엔드 개발, 배포 전략을 포함하여 실시간 뉴스 피드 시스템을 구축하고 관리하는 데 필요한 포괄적인 이해를 얻게 됩니다.
