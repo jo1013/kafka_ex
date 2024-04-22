@@ -3,10 +3,11 @@ from fastapi import APIRouter, HTTPException
 from .models import UserSignUp, User, UserPasswordReset
 from bson import ObjectId
 from datetime import datetime
-from database.connection import db_instance
 from fastapi import APIRouter
 from database import db
 import bcrypt
+from typing import Any  # Any 타입을 임포트
+
 
 router = APIRouter()
 

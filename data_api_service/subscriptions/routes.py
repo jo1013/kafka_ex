@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from .models import SubscriptionModel
 from .schemas import Subscription, SubscriptionCreate, SubscriptionUpdate
 from typing import List
+from database import db
 
 router = APIRouter()
 

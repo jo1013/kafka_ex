@@ -87,7 +87,7 @@ function NewsPage() {
                             />
                         </Grid>
                     ))}
-                   {hasMore && <div ref={loader} />}  // 로더 요소 표시 조건 추가
+                   {hasMore && <div ref={loader} />} 
                 </Grid>
             )}
             {tabValue === 1 && <SearchPage newsData={newsData} />}

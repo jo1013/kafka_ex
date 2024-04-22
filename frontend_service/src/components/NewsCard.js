@@ -2,7 +2,7 @@ import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
-import { recordNewsClick } from './api/userApi'; // 경로에 따라 변경 가능
+import { recordNewsClick } from '../api/userApi'; // 경로에 따라 변경 가능
 
 function NewsCard({ id, title, imageUrl, source, published_at}) {
   const navigate = useNavigate();

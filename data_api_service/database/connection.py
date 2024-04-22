@@ -1,4 +1,4 @@
-# database.py
+# connection.py
 from pymongo import MongoClient
 import os
 
@@ -7,17 +7,15 @@ class Database:
         # 일반 데이터베이스 연결
         self.client = MongoClient(os.getenv('MONGODB_URI'))
         self.db = self.client[os.getenv('MONGODB_DATABASE')]
-        self.collection = self.db[os.getenv('MONGODB_COLLECTION')]
+        self.news_collection = self.db[os.getenv('MONGODB_COLLECTION')]
 
         # 사용자 정보 데이터베이스 연결
         self.user_client = MongoClient(os.getenv('MONGODB_USER_URI'))
         self.user_db = self.user_client[os.getenv('MONGODB_USER_DATABASE')]
         self.user_collection = self.user_db[os.getenv('MONGODB_USER_INFO_COLLECTION')]
 
-    def get_collection(self, collection_name):
-        return self.db[collection_name]
+    def get_news_collection(self):
+        return self.news_collection
 
-    def get_user_collection(self, collection_name):
-        return self.user_db[collection_name]
-
-db = Database()
+    def get_user_collection(self):
+        return self.user_collection
