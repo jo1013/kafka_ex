@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // 사용자 관련 기능을 수행하는 서버의 기본 URL 설정
-const USER_API_ENDPOINT = 'http://localhost:8001/user';
+const USER_API_ENDPOINT = 'http://localhost:8001/users';
 
 
 

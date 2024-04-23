@@ -1,22 +1,24 @@
-from pymongo import MongoClient
+from pymongo import DESCENDING
 from bson import ObjectId
 from database import db
 
 class NewsModel:
     def __init__(self):
-        self.collection = db.get_collection('news')
+        self.news_collection = db.get_news_collection()
 
-    def find_all(self, skip, limit):
-        return list(self.collection.find().skip(skip).limit(limit))
+    def get_news(self, skip: int, limit: int):
+        news_cursor = self.news_collection.find().sort([("published_at", DESCENDING)]).skip(skip).limit(limit)
+        total_items = self.news_collection.count_documents({})
+        return list(news_cursor), total_items
 
     def find_by_id(self, news_id):
-        return self.collection.find_one({"_id": ObjectId(news_id)})
+        return self.news_collection.find_one({"_id": ObjectId(news_id)})
 
     def insert_one(self, news_data):
-        return self.collection.insert_one(news_data).inserted_id
+        return self.news_collection.insert_one(news_data).inserted_id
 
     def update_one(self, news_id, news_data):
-        return self.collection.update_one({"_id": ObjectId(news_id)}, {"$set": news_data})
+        return self.news_collection.update_one({"_id": ObjectId(news_id)}, {"$set": news_data})
 
     def delete_one(self, news_id):
-        return self.collection.delete_one({"_id": ObjectId(news_id)})
+        return self.news_collection.delete_one({"_id": ObjectId(news_id)})

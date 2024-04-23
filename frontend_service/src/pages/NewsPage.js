@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import NewsCard from '../components/NewsCard';
 import SearchPage from '../components/SearchPage';
 import { fetchNews } from '../api/newsApi';
-import { Container, Typography, Tabs, Tab, Box, Grid } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, Grid, Button } from '@mui/material'
 
 
 
@@ -15,6 +15,13 @@ function NewsPage() {
     const [loading, setLoading] = useState(false);  // 로딩 상태 추가
     const [hasMore, setHasMore] = useState(true);  // 더 로드할 데이터가 있는지
     const loader = useRef(null);
+
+    const handleLogout = () => {
+        localStorage.removeItem('userToken');  // 사용자 토큰을 로컬 스토리지에서 제거
+        // 로그인 페이지로 리다이렉트 등 추가적인 동작 수행
+        window.location.href = '/login';  // 예시: 로그인 페이지로 리다이렉트
+    };
+
 
     useEffect(() => {
         if (!hasMore || loading) return;  // 로딩 중이거나 더 이상 로드할 데이터가 없으면 호출 중지
@@ -68,6 +75,9 @@ function NewsPage() {
             <Typography variant="h4" component="h1" gutterBottom align="center">
                 Latest News
             </Typography>
+            <Button variant="contained" color="primary" onClick={handleLogout} sx={{ mb: 2 }}>
+                Logout
+            </Button>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example">
                     <Tab label="All News" />

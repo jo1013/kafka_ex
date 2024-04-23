@@ -1,8 +1,12 @@
+아래는 MongoDB 설정에 관한 추가적인 설명을 포함한 내용을 프로젝트의 README 파일에 포함시킨 버전입니다. 이 부분은 MongoDB의 사용자와 데이터베이스 관리에 대한 중요한 정보를 제공하며, 특히 다중 데이터베이스 환경에서의 사용자 계정과 권한 설정에 대해 설명합니다.
+
+---
+
 # Real-time News Feed System
 
 ## Overview
 
-This project is designed to collect, process, and deliver news articles to users in real-time, utilizing Kafka for data streaming, Docker for containerization, and MongoDB for data storage.
+This project aims to build a system that collects, processes, and delivers news articles to users in real-time, leveraging Kafka for data streaming, Docker for containerization, and MongoDB for data storage.
 
 ## System Components
 
@@ -17,8 +21,8 @@ This project is designed to collect, process, and deliver news articles to users
 ## Features
 
 - **Real-time Data Collection**: Utilizes the MediaStack API for gathering news articles.
-- **Data Processing**: Performs data cleaning and categorization using Python or Spark.
-- **Scalable Architecture**: Uses a Kafka cluster to ensure system scalability.
+- **Data Processing**: Involves data cleaning and categorization using Python or Spark.
+- **Scalable Architecture**: Utilizes a Kafka cluster to ensure system scalability.
 - **Security**: Implements security configurations for Kafka and databases.
 - **Monitoring**: Employs Kibana or Grafana for system monitoring.
 - **Subscription and Trending Features**: Allows users to subscribe to topics or view trending news based on user engagement.
@@ -67,6 +71,8 @@ docker-compose up
 
 ## MongoDB Setup
 
+### Initial Setup
+
 After initializing the MongoDB container, configure the database and user:
 
 ```bash
@@ -77,13 +83,33 @@ mongosh
 Then in the MongoDB shell:
 
 ```javascript
-use news_admin
+use admin
 db.createUser({
-    user: "myUser",
+    user: "news_admin",
     pwd: "myUserPassword",
-    roles: [{ role: "readWrite", db: "myNewDatabase" }]
+    roles: [{ role: "readWrite", db: "news" }]
 })
-db.createCollection("myCollection")
+db.createCollection("newsArticles")
+```
+
+### Understanding MongoDB Accounts
+
+- **Multiple Database Management**: On a single MongoDB server, each database can have its own set of users. In this project, we manage two databases: `user_data` and `news_data`. It's important to create separate user accounts for each database to enhance security and manage privileges efficiently.
+
+```bash
+use user_data
+db.createUser({
+    user: "user_admin",
+    pwd: "userPassword",
+    roles: [{ role: "readWrite", db: "user_data" }]
+})
+
+use news_data
+db.createUser({
+    user: "news_admin",
+    pwd: "newsPassword",
+    roles: [{ role: "readWrite", db: "news_data" }]
+})
 ```
 
 ## ARM64 Compatibility Note
@@ -93,11 +119,15 @@ db.createCollection("myCollection")
 ## Project Outcomes
 
 #### Participants will develop skills in real-time data processing, system architecture design, front-end development, and deployment strategies, gaining a comprehensive understanding of how to build and manage a real-time news feed system.
+
+---------
+---------
+
+
+아래는 프로젝트의 README 파일에 포함할 한국어 버전 내용입니다. 이는 실시간 뉴스 피드 시스템의 설치 지침과 MongoDB 설정에 대한 추가 설명을 포함합니다.
+
 ---
 
-
-
----
 # 실시간 뉴스 피드 시스템
 
 ## 개요
@@ -107,12 +137,12 @@ db.createCollection("myCollection")
 ## 시스템 구성 요소
 
 - **API 호출 컨테이너**: 외부 API에서 데이터를 가져와 Kafka로 전송합니다.
-- **주키퍼 서비스(Zookeeper Service)**: Kafka의 상태를 관리합니다.
-- **카프카 서비스(Kafka Service)**: 메시지 스트리밍을 처리합니다.
-- **컨슈머 서비스(Consumer Service)**: Kafka에서 데이터를 소비하여 MongoDB에 저장합니다.
-- **데이터 API 서비스(Data API Service)**: 처리된 데이터를 FAST-API를 통해 프론트엔드에 제공합니다.
-- **프런트엔드 서비스(Frontend Service)**: React로 구축된 사용자 인터페이스를 통해 뉴스 데이터를 사용자에게 표시합니다.
-- **몽고디비 서비스(MongoDB Service)**: Kafka에서 소비된 데이터를 저장합니다.
+- **주키퍼 서비스**: Kafka의 상태를 관리합니다.
+- **카프카 서비스**: 메시지 스트리밍을 처리합니다.
+- **컨슈머 서비스**: Kafka에서 데이터를 소비하여 MongoDB에 저장합니다.
+- **데이터 API 서비스**: 처리된 데이터를 FAST-API를 통해 프론트엔드에 제공합니다.
+- **프론트엔드 서비스**: React로 구축된 사용자 인터페이스를 통해 뉴스 데이터를 사용자에게 표시합니다.
+- **몽고디비 서비스**: Kafka에서 소비된 데이터를 저장합니다.
 
 ## 특징
 
@@ -128,8 +158,8 @@ db.createCollection("myCollection")
 
 ### 사전 요구 사항
 
-- Docker 및 Docker Compose 설치
-- [MediaStack](https://mediastack.com/) 계정 및 API 키
+- Docker 및 Docker Compose 설치.
+- [MediaStack](https://mediastack.com/) 계정 및 API 키.
 
 ### 환경 설정
 
@@ -167,6 +197,8 @@ docker-compose up
 
 ## MongoDB 설정
 
+### 초기 설정
+
 MongoDB 컨테이너를 초기화 한 후 데이터베이스와 사용자를 설정합니다:
 
 ```bash
@@ -177,19 +209,43 @@ mongosh
 MongoDB 쉘에서:
 
 ```javascript
-use news_admin
+use admin
 db.createUser({
-    user: "myUser",
+    user: "news_admin",
     pwd: "myUserPassword",
-    roles: [{ role: "readWrite", db: "myNewDatabase" }]
+    roles: [{ role: "readWrite", db: "news" }]
 })
-db.createCollection("myCollection")
+db.createCollection("newsArticles")
 ```
 
-## ARM64 호환성 참고 사항
+### MongoDB 계정 이해
+
+- **다
+
+중 데이터베이스 관리**: 단일 MongoDB 서버에서 각 데이터베이스는 자체 사용자 세트를 가질 수 있습니다. 이 프로젝트에서는 `user_data` 및 `news_data` 두 개의 데이터베이스를 관리합니다. 보안을 강화하고 권한을 효율적으로 관리하기 위해 각 데이터베이스에 대해 별도의 사용자 계정을 생성하는 것이 중요합니다.
+
+```bash
+use user_data
+db.createUser({
+    user: "user_admin",
+    pwd: "userPassword",
+    roles: [{ role: "readWrite", db: "user_data" }]
+})
+
+use news_data
+db.createUser({
+    user: "news_admin",
+    pwd: "newsPassword",
+    roles: [{ role: "readWrite", db: "news_data" }]
+})
+```
+
+## ARM64 호환성 참고
 
 M1 Mac 사용자는 ARM64 호환 Docker 이미지를 사용해야 합니다. Kafka 설정을 위해서는 [ARM64 호환 Confluent Platform](https://github.com/arm64-compat/confluent-platform)을 참조하세요.
 
 ## 프로젝트 성과
 
 참여자들은 실시간 데이터 처리, 시스템 아키텍처 설계, 프론트엔드 개발, 배포 전략을 포함하여 실시간 뉴스 피드 시스템을 구축하고 관리하는 데 필요한 포괄적인 이해를 얻게 됩니다.
+
+---

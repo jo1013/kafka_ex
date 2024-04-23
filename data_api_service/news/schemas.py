@@ -1,5 +1,4 @@
-
-
+## data_api_service/news/schemas.py
 from typing import List
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
@@ -39,7 +38,7 @@ class NewsData(BaseModel):
 
  
     class Config:
-        orm_mode = True
+        from_attributes = True
         json_encoders = {ObjectId: str}
 
 # 새로운 응답 모델 정의

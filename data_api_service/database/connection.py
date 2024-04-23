@@ -14,8 +14,14 @@ class Database:
         self.user_db = self.user_client[os.getenv('MONGODB_USER_DATABASE')]
         self.user_collection = self.user_db[os.getenv('MONGODB_USER_INFO_COLLECTION')]
 
+        self.subscriptions_collection = self.user_db[os.getenv('MONGODB_SUBSCRIPTIONS_COLLECTION')]
+
+
     def get_news_collection(self):
         return self.news_collection
 
     def get_user_collection(self):
         return self.user_collection
+
+    def get_subscriptions_collection(self):
+        return self.subscriptions_collection

@@ -4,7 +4,7 @@ from database import db
 
 class SubscriptionModel:
     def __init__(self):
-        self.collection = db.get_user_collection('subscriptions')
+        self.collection = db.get_subscriptions_collection()
 
     def find_all(self, user_id):
         return list(self.collection.find({"user_id": ObjectId(user_id)}))

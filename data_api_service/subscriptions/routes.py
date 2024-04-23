@@ -5,12 +5,14 @@ from typing import List
 from database import db
 
 router = APIRouter()
+sub_collection = db.get_subscriptions_collection()
+
 
 @router.get("/", response_model=List[Subscription])
 async def read_subscriptions(user_id: str):
     subscription_model = SubscriptionModel()
     subscriptions = subscription_model.find_all(user_id)
-    return [SubscriptionInDB(**item) for item in subscriptions]
+    return [sub_collection(**item) for item in subscriptions]
 
 @router.get("/{subscription_id}", response_model=Subscription)
 async def read_subscription_by_id(subscription_id: str):
@@ -18,7 +20,7 @@ async def read_subscription_by_id(subscription_id: str):
     subscription_item = subscription_model.find_by_id(subscription_id)
     if subscription_item is None:
         raise HTTPException(status_code=404, detail="Subscription not found")
-    return SubscriptionInDB(**subscription_item)
+    return sub_collection(**subscription_item)
 
 @router.post("/", response_model=Subscription)
 async def create_subscription(subscription: SubscriptionCreate):

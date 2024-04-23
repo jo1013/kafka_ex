@@ -1,25 +1,21 @@
+# ## data_api_service/news/routes.py
+
+
+# data_api_service/news/routes.py
 from fastapi import APIRouter
 from .models import NewsModel
-from .schemas import *
-from typing import List
-from database import db
+from .schemas import NewsResponse, NewsData
 from fastapi.encoders import jsonable_encoder
-from typing import List, Dict, Any, Optional
-from datetime import datetime
-from pymongo import DESCENDING
+from typing import List
 from bson import ObjectId
-import os
-import json
-import secrets
-import string
 
 router = APIRouter()
-news_collection = db.get_news_collection()
+news_model = NewsModel()
 
 @router.get("/", response_model=NewsResponse)
 async def get_news(page: int = 1, page_size: int = 10):
-    skip = (page - 1) * page_size    
-    news_cursor = news_collection.find().sort([("published_at", DESCENDING)]).skip(skip).limit(page_size) # 최신 뉴스부터 정렬
-    news_list = [NewsData(**jsonable_encoder(news, custom_encoder={ObjectId: str})) for news in news_cursor]
-    total_items = news_collection.count_documents({})
+    skip = (page - 1) * page_size
+    news_items, total_items = news_model.get_news(skip, page_size)
+    news_list = [NewsData(**jsonable_encoder(news, custom_encoder={ObjectId: str})) for news in news_items]
     return NewsResponse(newsList=news_list, totalItems=total_items)
+
