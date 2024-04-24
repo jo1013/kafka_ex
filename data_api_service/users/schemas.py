@@ -10,6 +10,11 @@ class UserCreate(UserBase):
     password: str
     subscriptions: List[str] = []
 
+class LoginResponse(BaseModel):
+    message: str
+    user_id: str
+
+
 class UserDisplay(UserBase):
     user_id: str
     created_at: datetime

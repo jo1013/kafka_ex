@@ -1,6 +1,6 @@
 # data_api_service/users/routes.py
 from fastapi import APIRouter, status, HTTPException
-from .schemas import UserCreate, UserDisplay, UserLogin, UserPasswordReset
+from .schemas import UserCreate, UserDisplay, UserLogin, UserPasswordReset, LoginResponse
 from .models import authenticate_user, create_user, reset_password
 
 router = APIRouter()
@@ -10,7 +10,7 @@ def signup(user_data: UserCreate):
     user_dict = create_user(user_data)
     return UserDisplay(**user_dict)
 
-@router.post("/login", response_model=UserDisplay)
+@router.post("/login", response_model=LoginResponse)
 def login(user_credentials: UserLogin):
     user = authenticate_user(user_credentials.email, user_credentials.password)
     if user:
