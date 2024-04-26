@@ -17,10 +17,23 @@ export const fetchNews = async (page = 1, page_size = 10) => {
 };
 
 
-
 export const fetchNewsDetail = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:8001/news/details/${id}`);
+    const response = await axios.get(`${API_ENDPOINT}/details/${id}`);
+    if (response.data) {
+      return response.data;
+    } else {
+      console.error('No data returned from the API');
+    }
+  } catch (error) {
+    console.error('Failed to fetch news details:', error);
+    throw error;
+  }
+};
+
+export const NewsList = async () => {
+  try {
+    const response = await axios.get(`${API_ENDPOINT}/list/${id}`);
     if (response.data) {
       return response.data;
     } else {

@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+## subscriptions/schemas.py
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
@@ -13,16 +14,12 @@ class SubscriptionCreate(SubscriptionBase):
 class SubscriptionUpdate(BaseModel):
     tag: Optional[str] = None
     source: Optional[str] = None
-
-class SubscriptionInDBBase(SubscriptionBase):
-    id: str
-    created_at: datetime
-
     class Config:
-        from_attributes = True
+        orm_mode = True
 
-class Subscription(SubscriptionInDBBase):
+
+class Subscription(SubscriptionBase):
     pass
 
-class SubscriptionInDB(SubscriptionInDBBase):
+class SubscriptionInDB(SubscriptionBase):
     pass

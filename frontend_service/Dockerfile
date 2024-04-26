@@ -11,8 +11,10 @@ COPY . .
 
 RUN npm install
 RUN npm install react-router-dom@6
+RUN npm install typescript@latest ajv@^8 --save-dev
 RUN npm install @mui/material @emotion/react @emotion/styled
 RUN npm install date-fns
+
 
 
 RUN npm run build
