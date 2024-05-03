@@ -1,3 +1,4 @@
+// src/components/NewsCard.js
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +11,7 @@ function NewsCard({ id, title, imageUrl, source, published_at}) {
 
   const handleClick = async () => {
     try {
-      await recordNewsClick(userId, id);
+      await recordNewsClick(id);
       navigate(`/news/${id}`);
     } catch (error) {
       console.error('Error recording news click:', error);

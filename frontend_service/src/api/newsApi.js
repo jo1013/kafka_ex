@@ -33,7 +33,7 @@ export const fetchNewsDetail = async (id) => {
 
 export const NewsList = async () => {
   try {
-    const response = await axios.get(`${API_ENDPOINT}/list/${id}`);
+    const response = await axios.get(`${API_ENDPOINT}/list`);
     if (response.data) {
       return response.data;
     } else {

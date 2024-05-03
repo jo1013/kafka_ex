@@ -1,12 +1,10 @@
 ## data_api_service/news/schemas.py
 from typing import List
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
 from bson import ObjectId
 from pydantic import BaseModel, Field, HttpUrl
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-from bson import ObjectId
 
 
 router = APIRouter()
@@ -26,9 +24,9 @@ class PyObjectId(ObjectId):
 class NewsData(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     author: Optional[str] = None
-    title: str
+    title: Optional[str] = None  # Make title optional
     description: Optional[str] = None
-    url: HttpUrl
+    url: Optional[HttpUrl] = None  # Make URL optional
     source: str
     image: Optional[HttpUrl] = None
     category: Optional[str] = None  # 선택적으로 변경

@@ -13,13 +13,16 @@ function LoginPage({ onLoginSuccess }) {
     event.preventDefault();
     try {
       const data = await loginUser(email, password);
+
       if (data && data.message === "Login successful") {
         alert('로그인 성공!');
+        localStorage.setItem('jwt', data.token);  // JWT를 로컬 스토리지에 저장
         onLoginSuccess(true);
         navigate('/news');
       } else {
         throw new Error('로그인에 실패했습니다.');
       }
+      
     } catch (error) {
       alert(`로그인 실패: ${error.response?.data?.detail || error.message}`);
     }

@@ -1,6 +1,6 @@
-// NewsPage.js
+// src/pages/NewsPage.js
 import React, { useEffect, useState, useRef} from 'react';
-import { useNavigate } from 'react-router-dom'; // 올바른 import
+import { useNavigate } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import SearchPage from '../components/SearchPage';
 import { fetchNews } from '../api/newsApi';
@@ -16,7 +16,9 @@ function NewsPage() {
     const [hasMore, setHasMore] = useState(true);  // 더 로드할 데이터가 있는지
     const loader = useRef(null);
     const navigate = useNavigate(); // 네비게이트 함수 추가
-
+    const handleCardClick = (newsId) => {
+        navigate(`/news/${newsId}`);  // 예: 뉴스 상세 페이지 URL
+    };
     const handleLogout = () => {
         localStorage.removeItem('userToken');  // 사용자 토큰을 로컬 스토리지에서 제거
         window.location.href = '/login';  // 예시: 로그인 페이지로 리다이렉트
@@ -127,7 +129,9 @@ function NewsPage() {
                                 title={news.title}
                                 imageUrl={news.image}
                                 source={news.source}
+                                userId={user.id} 
                                 published_at={news.published_at}
+                                onClick={handleCardClick}
                             />
                         </Grid>
                     ))}

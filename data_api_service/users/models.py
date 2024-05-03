@@ -3,7 +3,7 @@ from fastapi import HTTPException
 import secrets
 import string
 from database import db
-from .schemas import UserCreate
+from .schemas import UserCreate, ClickEvent
 import bcrypt
 from datetime import datetime
 
@@ -38,3 +38,8 @@ def reset_password(email: str):
     hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
     user_collection.update_one({"_id": user['_id']}, {"$set": {"password": hashed_password}})
     return new_password
+
+def record_click_event(click_data: ClickEvent):
+    click_dict = click_data.dict()
+    result = click_collection.insert_one(click_dict)
+    return {"status": "success", "inserted_id": str(result.inserted_id)}

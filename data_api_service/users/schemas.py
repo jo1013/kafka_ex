@@ -1,5 +1,5 @@
 # data_api_service/users/schemas.py
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from typing import List, Optional
 
@@ -11,8 +11,10 @@ class UserCreate(UserBase):
     subscriptions: List[str] = []
 
 class LoginResponse(BaseModel):
-    message: str
-    user_id: str
+    message : str
+    user_id : Optional[str] = None
+    token: str
+
 
 
 class UserDisplay(UserBase):
@@ -31,3 +33,10 @@ class User(BaseModel):
     email: str
     password: str
     user_id: Optional[str] = None
+
+
+class ClickEvent(BaseModel):
+    user_id: str
+    news_id: str
+    activity_type: str = "click"
+    timestamp: datetime = Field(default_factory=datetime.utcnow)

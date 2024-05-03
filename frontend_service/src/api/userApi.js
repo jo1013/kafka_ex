@@ -17,8 +17,8 @@ export const recordNewsClick = async (userId, newsId) => {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // 로컬 스토리지에서 토큰 가져오기
-      }
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}` 
+         }
     });
 
     if (!response.data) {
@@ -44,16 +44,18 @@ export const signupUser = async (email, password) => {
   }
 };
 
-// 사용자 로그인
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${USER_API_ENDPOINT}/login`, { email, password });
+    // 로그인 성공 시 토큰을 로컬 스토리지에 저장
+    localStorage.setItem('jwt', response.data.token);
     return response.data; // 로그인 성공 시 반환되는 데이터 (예: 사용자 정보, 토큰 등)
   } catch (error) {
     console.error('로그인 실패:', error);
-    throw error;
+    throw error; // 로그인 실패 시 예외를 발생시키기
   }
 };
+
 
 // 아이디 찾기
 export const findUserId = async (email) => {

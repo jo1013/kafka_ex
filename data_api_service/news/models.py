@@ -2,6 +2,8 @@ from pymongo import DESCENDING
 from bson import ObjectId
 from database import db
 
+
+
 class NewsModel:
     def __init__(self):
         self.news_collection = db.get_news_collection()

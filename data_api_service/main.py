@@ -1,6 +1,6 @@
 # data_api_service/main.py
 import logging
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -8,7 +8,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from users.routes import router as user_router
 from news.routes import router as news_router
 from subscriptions.routes import router as subscription_router
-
 
 # 로거 설정
 logger = logging.getLogger(__name__)

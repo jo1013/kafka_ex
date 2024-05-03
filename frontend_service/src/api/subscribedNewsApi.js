@@ -5,39 +5,36 @@ import axios from 'axios';
 // FastAPI 서버의 `/news` 엔드포인트를 가리키도록 API_ENDPOINT 업데이트
 const API_ENDPOINT = 'http://localhost:8001/subscriptions'; // 포트번호 확인 필요
 
+const api = axios.create({
+  baseURL: API_ENDPOINT,
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+  }
+});
 
-export const fetchSubscribedNewsApi = async (page = 1, page_size = 10, subscribed = true) => {
+export const fetchSubscribedNewsApi = async () => {
   try {
-    const response = await axios.get(`${API_ENDPOINT}?page=${page}&page_size=${page_size}&subscribed=${subscribed}&sort=-created_at`);
-    console.log(response.data);
+    const response = await api.get(`/`);
+    console.log('Subscribed news fetched:', response.data);
     return response.data;
   } catch (error) {
-    console.error('뉴스를 가져오는데 실패했습니다:', error);
+    console.error('Failed to fetch subscribed news:', error);
     throw error;
   }
 };
 
 
-// 뉴스 구독 함수
-export const subscribeToNews = async (newsId) => {
+export const toggleNewsSubscription = async (newsId, action) => {
   try {
-      const response = await axios.post(`${API_ENDPOINT}/${newsId}/subscribe`);
-      console.log('뉴스 구독 성공:', response.data);
-      return response.data;
+    console.log(action)
+    console.log(newsId)
+    const response = await api.patch(`/${newsId}`, { action });
+    console.log(`뉴스 ${action} 성공:`, response.data);
+    return response.data;
   } catch (error) {
-      console.error('뉴스 구독 실패:', error);
-      throw error;
+    console.error(`뉴스 ${action} 실패:`, error);
+    throw error;
   }
 };
 
-// 뉴스 구독 취소 함수
-export const unsubscribeFromNews = async (newsId) => {
-  try {
-      const response = await axios.post(`${API_ENDPOINT}/${newsId}/unsubscribe`);
-      console.log('뉴스 구독 취소 성공:', response.data);
-      return response.data;
-  } catch (error) {
-      console.error('뉴스 구독 취소 실패:', error);
-      throw error;
-  }
-};

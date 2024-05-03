@@ -1,31 +1,31 @@
 #### subscriptions/models.py
+from datetime import datetime
 from pymongo import DESCENDING, ASCENDING
 from bson import ObjectId
 from database import db
+
 
 class SubscriptionModel:
 
     def __init__(self):
         self.collection = db.get_subscriptions_collection()
 
-    def find_subscriptions(self, user_id, skip, limit, sort):
+    def find_subscriptions(self, user_id, sort):
+        # 정렬 순서를 결정합니다.
         sort_order = DESCENDING if sort.startswith('-') else ASCENDING
-        return list(self.collection.find({"user_id": user_id}).skip(skip).limit(limit).sort("created_at", sort_order))
+        sort_field = sort.lstrip('-+')  # '-' 또는 '+' 기호를 제거하여 순수 필드 이름을 추출합니다.
 
-    def delete_subscription_by_news_id(self, news_id, user_id):
-        return self.collection.delete_one({"news_id": news_id, "user_id": user_id})
-
-    def find_all(self, user_id):
-        return list(self.collection.find({"user_id": ObjectId(user_id)}))
-
-    def find_by_id(self, subscription_id):
-        return self.collection.find_one({"_id": ObjectId(subscription_id)})
-
-    def insert_one(self, subscription_data):
-        return self.collection.insert_one(subscription_data).inserted_id
-
-    def update_one(self, subscription_id, subscription_data):
-        return self.collection.update_one({"_id": ObjectId(subscription_id)}, {"$set": subscription_data})
-
-    def delete_one(self, subscription_id):
-        return self.collection.delete_one({"_id": ObjectId(subscription_id)})
+        # 사용자 ID로 필터링하고, 적절한 페이징과 정렬을 적용하여 구독 목록을 조회합니다.
+        return list(
+            self.collection.find({"user_id": ObjectId(user_id)})
+            .sort(sort_field, sort_order)
+        )
+    def toggle_subscription(self, subscription_id, is_subscribe):
+        update_result = self.collection.update_one(
+            {"_id": ObjectId(subscription_id)},
+            {"$set": {"is_subscribe": is_subscribe, "updated_at": datetime.utcnow()}}
+        )
+        return update_result.modified_count > 0
+        
+    def find_one(self, query):
+        return self.collection.find_one(query)
