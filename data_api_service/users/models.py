@@ -1,13 +1,16 @@
 # data_api_service/users/model.py
-from fastapi import HTTPException
 import secrets
 import string
-from database import db
-from .schemas import UserCreate, ClickEvent
 import bcrypt
+from passlib.context import CryptContext
 from datetime import datetime
+from fastapi import HTTPException
+from .schemas import UserCreate, ClickEvent
+from database import db
+
 
 user_collection = db.get_user_collection()
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_user(user_data: UserCreate):
     if user_collection.find_one({"email": user_data.email}):
@@ -43,3 +46,22 @@ def record_click_event(click_data: ClickEvent):
     click_dict = click_data.dict()
     result = click_collection.insert_one(click_dict)
     return {"status": "success", "inserted_id": str(result.inserted_id)}
+
+
+class UserModel:
+    def __init__(self):
+        self.collection = db.get_user_collection()
+
+    def find_by_username(self, username: str):
+        return self.collection.find_one({"username": username})
+
+    def create_user(self, username: str, password: str):
+        hashed_password = pwd_context.hash(password)
+        user_id = self.collection.insert_one({
+            "username": username,
+            "hashed_password": hashed_password
+        }).inserted_id
+        return str(user_id)
+
+    def verify_password(self, plain_password: str, hashed_password: str):
+        return pwd_context.verify(plain_password, hashed_password)

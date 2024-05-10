@@ -27,14 +27,11 @@ export const fetchSubscribedNewsApi = async () => {
 
 export const toggleNewsSubscription = async (newsId, action) => {
   try {
-    console.log(action)
-    console.log(newsId)
-    const response = await api.patch(`/${newsId}`, { action });
+    const response = await api.patch(`/${newsId}?action=${action}`);
     console.log(`뉴스 ${action} 성공:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`뉴스 ${action} 실패:`, error);
+    console.error(`뉴스 ${action} 실패:`, error.response ? error.response.data : error.message);
     throw error;
   }
 };
-

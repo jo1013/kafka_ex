@@ -4,3 +4,4 @@ pymongo
 bcrypt
 pydantic[email]
 pyjwt
+passlib
