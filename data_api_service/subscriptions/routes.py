@@ -50,7 +50,7 @@ async def toggle_subscription(
         if not successful_update:
             raise HTTPException(status_code=500, detail="Failed to update subscription")
 
-        return {**existing_subscription, "is_subscribe": new_is_subscribe}
+        return subscription_model.find_one({"_id": existing_subscription["_id"]})
 
     else:
         if action == "subscribe":

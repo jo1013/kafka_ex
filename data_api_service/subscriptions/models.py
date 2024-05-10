@@ -28,11 +28,11 @@ class SubscriptionModel:
         )
         return update_result.modified_count > 0
 
-    def find_one(self, query: dict) -> dict:
+    def find_one(self, query) :
         sub = self.collection.find_one(query)
         return {**sub, '_id': to_str_id(sub['_id']), 'user_id': to_str_id(sub['user_id'])} if sub else None
 
-    def create_subscription(self, subscription_data: SubscriptionCreate):
+    def create_subscription(self, subscription_data: dict):
         new_subscription = subscription_data.dict()
         new_subscription["created_at"] = new_subscription["updated_at"] = datetime.utcnow()
         new_subscription["user_id"] = ObjectId(new_subscription["user_id"])
