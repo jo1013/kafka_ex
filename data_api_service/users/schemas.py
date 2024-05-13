@@ -43,7 +43,7 @@ class User(BaseModel):
 
     class Config:
         json_encoders = {ObjectId: to_str_id}
-        from_attributes = True  # 'orm_mode'를 'from_attributes'로 변경
+        from_attributes = True  # 'from_attributes'를 'from_attributes'로 변경
 
 
 class ClickEvent(BaseModel):

@@ -1,22 +1,24 @@
 # data_api_service/subscriptions/routes.py
 import logging
-from typing import List, Optional
-from bson import ObjectId
-from datetime import datetime
-from fastapi import APIRouter, Query, HTTPException, Depends, status
+from typing import List
+from fastapi import APIRouter, Query, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
-from database import db
-from dependencies import decode_access_token
 from .models import SubscriptionModel
 from .schemas import Subscription, SubscriptionCreate
+from dependencies import decode_access_token
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("uvicorn")
 
+# FastAPI 라우터 설정 및 OAuth2 보안 스키마 정의
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
 
+# 뉴스 ID가 알파벳과 숫자로만 이루어져 있는지 검사하는 함수
+def is_valid_news_id(news_id: str) -> bool:
+    return news_id.isalnum()
 
+# 구독한 뉴스 목록을 조회하는 엔드포인트
 @router.get("/", response_model=List[Subscription])
 async def fetch_subscribed_news(token: str = Depends(oauth2_scheme)):
     user_id = decode_access_token(token)
@@ -24,7 +26,7 @@ async def fetch_subscribed_news(token: str = Depends(oauth2_scheme)):
     subscriptions = subscription_model.find_subscriptions(user_id, 'updated_at')
     return subscriptions
 
-
+# 뉴스 구독 상태를 토글하는 엔드포인트
 @router.patch("/{news_id}", response_model=Subscription)
 async def toggle_subscription(
     news_id: str,
@@ -34,32 +36,47 @@ async def toggle_subscription(
     user_id = decode_access_token(token)
     subscription_model = SubscriptionModel()
 
-    # Fetch the current state of the subscription
-    existing_subscription = subscription_model.find_one({"news_id": news_id, "user_id": ObjectId(user_id)})
-    
-    if existing_subscription:
-        new_is_subscribe = action == "subscribe"
+    existing_subscription = subscription_model.find_one({"news_id": news_id, "user_id": user_id})
+    #  action이 'subscribe' 경우 true action이 'unsubscribe' 겨우 false
+    new_is_subscribe = action == "subscribe"
+
+    # 해당 유저아이디와 뉴스아이디가 디비에 정보가 있는경우
+    if existing_subscription :
+        # 구독중일때 구독을 누른경우
         if existing_subscription["is_subscribe"] == new_is_subscribe:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Already {'subscribed' if new_is_subscribe else 'unsubscribed'}"
-            )
+            detail_msg = f"Already {'subscribed' if new_is_subscribe else 'unsubscribed'} to news ID {news_id}."
+            raise HTTPException(status_code=400, detail=detail_msg)
+        # 구독중일때 구독을 누른 경우 외의 모든 경우( 구독중일때 구독해제를 한경우, 비구독중일떄 비구독을 누른경우, 비구독을때 구독을 한경우)
+        else:
+            successful_update = subscription_model.toggle_subscription(existing_subscription["_id"], new_is_subscribe)
+            if successful_update:
+                updated_subscription = subscription_model.find_one({"_id": existing_subscription["_id"]})
+                if updated_subscription:
+                    return Subscription(**updated_subscription)
+                else:
+                    raise HTTPException(status_code=500, detail="Failed to find updated subscription")
+            else:
+                raise HTTPException(status_code=500, detail="Failed to update subscription")
 
-        successful_update = subscription_model.toggle_subscription(existing_subscription["_id"], new_is_subscribe)
-
-        if not successful_update:
-            raise HTTPException(status_code=500, detail="Failed to update subscription")
-
-        return subscription_model.find_one({"_id": existing_subscription["_id"]})
-
+    # 해당 유저아이디와 뉴스아이디가 디비에 정보가 없는경우
     else:
         if action == "subscribe":
-            new_subscription = SubscriptionCreate(
-                user_id=user_id,
-                news_id=news_id,
-                is_subscribe=True
-            )
-            created_subscription_id = subscription_model.create_subscription(new_subscription.dict())
-            return subscription_model.find_one({"_id": created_subscription_id})
+            if is_valid_news_id(news_id):
+                new_subscription = SubscriptionCreate(user_id=user_id, news_id=news_id, is_subscribe=True)
+                try:
+                    created_subscription_id = subscription_model.create_subscription(new_subscription)
+                    logger.debug(f"Created subscription ID: {created_subscription_id}")
+                    created_subscription = subscription_model.find_one({"_id": created_subscription_id})
+                    if created_subscription:
+                        return Subscription(**created_subscription)
+                    else:
+                        raise HTTPException(status_code=500, detail="Failed to find created subscription")
+                except Exception as e:
+                    logger.error(f"Error creating subscription: {str(e)}")  # 로깅 추가
+                    raise HTTPException(status_code=500, detail=str(e))  # 클라이언트에게 보다 명확한 에러 메시지 제공
 
-        raise HTTPException(status_code=404, detail="Subscription not found")
+            else:
+                raise HTTPException(status_code=404, detail="News ID not found")
+        else:
+            detail_msg = f"This is News Id that has not already been subscribed. {news_id}."
+            raise HTTPException(status_code=404, detail=detail_msg)
