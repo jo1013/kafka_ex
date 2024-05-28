@@ -16,7 +16,7 @@ class Database:
         self.user_collection = self.user_db[os.getenv('MONGODB_USER_INFO_COLLECTION')]
 
         self.subscriptions_collection = self.user_db[os.getenv('MONGODB_SUBSCRIPTIONS_COLLECTION')]
-
+        self.subscriptions_list_collection = self.db[os.getenv('MONGODB_SUBSCRIPTION_LIST_COLLECTION')]
 
     def get_news_collection(self):
         return self.news_collection
@@ -29,3 +29,6 @@ class Database:
 
     def get_subscriptions_collection(self):
         return self.subscriptions_collection
+
+    def get_subscriptions_list_collection(self):
+        return self.subscriptions_list_collection

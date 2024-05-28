@@ -22,6 +22,17 @@ class Subscription(BaseModel):
         }
 
 
+
+# class Subscription(BaseModel):
+#     id: str
+#     user_id: str
+#     news_id: str
+#     is_subscribe: bool
+#     created_at: Optional[str]
+#     updated_at: Optional[str]
+
+
+
 class SubscriptionCreate(BaseModel):
     user_id: str
     news_id: str

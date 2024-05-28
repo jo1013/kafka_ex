@@ -10,9 +10,16 @@ from dependencies import decode_access_token
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("uvicorn")
 
-# FastAPI 라우터 설정 및 OAuth2 보안 스키마 정의
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
+
+
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
+                    handlers=[
+                        logging.FileHandler("app.log"),  # 로그 파일에 저장
+                        logging.StreamHandler()  # 콘솔에 출력
+                    ])
 
 # 뉴스 ID가 알파벳과 숫자로만 이루어져 있는지 검사하는 함수
 def is_valid_news_id(news_id: str) -> bool:
@@ -25,6 +32,38 @@ async def fetch_subscribed_news(token: str = Depends(oauth2_scheme)):
     subscription_model = SubscriptionModel()
     subscriptions = subscription_model.find_subscriptions(user_id, 'updated_at')
     return subscriptions
+
+
+
+# 구독한 뉴스들을 조회하는 엔드포인트
+@router.get("/news", response_model=List[dict])  # 수정: response_model을 dict로 변경
+async def fetch_subscribed_news(
+    page: int = 1, 
+    page_size: int = 10,
+    token: str = Depends(oauth2_scheme)
+):
+    try:
+        skip = (page - 1) * page_size
+        # news_items, total_items = news_model.get_news(skip, page_size)
+        user_id = decode_access_token(token)
+        logging.info(f'user_id^^^^^^^^: {str(user_id)}')
+        subscription_model = SubscriptionModel()
+        subscriptions, total_items = subscription_model.get_subscribed_news(user_id, skip, page_size)
+        logging.info(f'subscriptions~~~~~~~: {str(subscriptions)}')
+        logging.info(f'total_items&^&&&&: {str(total_items)}')
+        # news_list = [sub for sub in subscriptions]
+        # return news_list
+        return subscriptions
+    except Exception as e:
+        logging.error(f'Error fetching subscribed news: {str(e)}')
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# @router.get("/", response_model=NewsResponse)
+# async def get_news(page: int = 1, page_size: int = 10):
+#     skip = (page - 1) * page_size
+#     news_items, total_items = news_model.get_news(skip, page_size)
+#     news_list = [NewsData(**jsonable_encoder(news, custom_encoder={ObjectId: str})) for news in news_items]
+#     return NewsResponse(newsList=news_list, totalItems=total_items)
 
 # 뉴스 구독 상태를 토글하는 엔드포인트
 @router.patch("/{news_id}", response_model=Subscription)

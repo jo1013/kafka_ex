@@ -1,60 +1,64 @@
 // src/pages/NewsPage.js
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import SearchPage from '../components/SearchPage';
 import { fetchNews } from '../api/newsApi';
-import { fetchSubscribedNewsApi } from '../api/subscribedNewsApi';
+import { fetchSubscribedNews } from '../api/subscribedNewsApi';
 import { Container, Typography, Tabs, Tab, Box, Grid, Button } from '@mui/material';
 
 function NewsPage() {
     const [newsData, setNewsData] = useState([]);
-    const [subscribedNews, setSubscribedNews] = useState([]); // 구독 뉴스 상태 추가
+    const [subscribedNews, setSubscribedNews] = useState([]);
     const [tabValue, setTabValue] = useState(0);
-    const [page, setPage] = useState(1);  // 페이지 상태 추가
-    const [loading, setLoading] = useState(false);  // 로딩 상태 추가
-    const [hasMore, setHasMore] = useState(true);  // 더 로드할 데이터가 있는지
+    const [page, setPage] = useState(1);
+    const [subscribedPage, setSubscribedPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [subscribedHasMore, setSubscribedHasMore] = useState(true);
     const loader = useRef(null);
-    const navigate = useNavigate(); // 네비게이트 함수 추가
+    const subscribedLoader = useRef(null);
+    const navigate = useNavigate();
+
     const handleCardClick = (newsId) => {
-        navigate(`/news/${newsId}`);  // 예: 뉴스 상세 페이지 URL
+        navigate(`/news/${newsId}`);
     };
+
     const handleLogout = () => {
-        localStorage.removeItem('userToken');  // 사용자 토큰을 로컬 스토리지에서 제거
-        window.location.href = '/login';  // 예시: 로그인 페이지로 리다이렉트
+        localStorage.removeItem('userToken');
+        window.location.href = '/login';
     };
 
     const handleSubscriptionList = () => {
-        navigate('/subscriptions'); // 구독 리스트 페이지로 이동
+        navigate('/subscriptions');
     };
 
     useEffect(() => {
-        if (!hasMore || loading) return;  // 로딩 중이거나 더 이상 로드할 데이터가 없으면 호출 중지
-    
-        setLoading(true);  // 데이터 로딩 시작
+        if (!hasMore || loading || tabValue !== 0) return;
+
+        setLoading(true);
         const loadData = async () => {
             try {
-                const data = await fetchNews(page);  // 현재 페이지 번호를 파라미터로 전달
+                const data = await fetchNews(page);
                 if (data && data.newsList.length > 0) {
                     setNewsData(prev => [...prev, ...data.newsList]);
-                    setPage(prev => prev + 1);  // 데이터 로딩 후 페이지 번호 증가
                 } else {
-                    setHasMore(false);  // 데이터가 더 이상 없다면 로딩 중지
+                    setHasMore(false);
                 }
             } catch (error) {
                 console.error('데이터 로딩 실패:', error);
             } finally {
-                setLoading(false);  // 로딩 상태 해제
+                setLoading(false);
             }
         };
         loadData();
-    }, [page, hasMore, loading]);  // 의존성 배열에 page, hasMore, loading 추가
+    }, [page, hasMore, loading, tabValue]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
             entries => {
-                if (entries[0].isIntersecting && hasMore && !loading) {
-                    setPage(prev => prev + 1);  // 페이지 번호 증가
+                if (entries[0].isIntersecting && hasMore && !loading && tabValue === 0) {
+                    setPage(prev => prev + 1);
                 }
             },
             { threshold: 0.1 }
@@ -67,35 +71,66 @@ function NewsPage() {
                 observer.unobserve(loader.current);
             }
         };
-    }, [loader, hasMore]);
+    }, [loader, hasMore, loading, tabValue]);
 
     useEffect(() => {
-        const fetchSubscribedNews = async () => {
+        if (!subscribedHasMore || loading || tabValue !== 2) return;
+
+        setLoading(true);
+        const loadSubscribedData = async () => {
             try {
-                const data = await fetchSubscribedNewsApi(); // 구독한 뉴스를 가져오는 API 함수
-                setSubscribedNews(data);
+                const data = await fetchSubscribedNews(subscribedPage);
+                if (data && data.length > 0) {
+                    setSubscribedNews(prev => [...prev, ...data]);
+                } else {
+                    setSubscribedHasMore(false);
+                }
             } catch (error) {
                 console.error('구독 뉴스 데이터 로딩 실패:', error);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchSubscribedNews();
-    }, []); // 구독 뉴스 데이터 불러오기
+        loadSubscribedData();
+    }, [subscribedPage, subscribedHasMore, loading, tabValue]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting && subscribedHasMore && !loading && tabValue === 2) {
+                    setSubscribedPage(prev => prev + 1);
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (subscribedLoader.current) {
+            observer.observe(subscribedLoader.current);
+        }
+        return () => {
+            if (subscribedLoader.current) {
+                observer.unobserve(subscribedLoader.current);
+            }
+        };
+    }, [subscribedLoader, subscribedHasMore, loading, tabValue]);
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
+        if (newValue === 0) {
+            setPage(1);
+            setNewsData([]);
+            setHasMore(true);
+        } else if (newValue === 2) {
+            setSubscribedPage(1);
+            setSubscribedNews([]);
+            setSubscribedHasMore(true);
+        }
     };
 
     return (
         <Container maxWidth="lg" sx={{ py: 8 }}>
-            <Typography variant="h4" component="h1" gutterBottom align="center">
-                Latest News
-            </Typography>
-            <Button variant="contained" color="primary" onClick={handleLogout} sx={{ mr: 2, mb: 2 }}>
-                Logout
-            </Button>
-            <Button variant="contained" color="secondary" onClick={handleSubscriptionList} sx={{ mb: 2 }}>
-                Subscription List
-            </Button>
+            <Typography variant="h4" component="h1" gutterBottom align="center">Latest News</Typography>
+            <Button variant="contained" color="primary" onClick={handleLogout} sx={{ mr: 2, mb: 2 }}>Logout</Button>
+            <Button variant="contained" color="secondary" onClick={handleSubscriptionList} sx={{ mb: 2 }}>Subscription List</Button>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example">
                     <Tab label="All News" />
@@ -106,17 +141,22 @@ function NewsPage() {
             {tabValue === 0 && (
                 <Grid container spacing={4}>
                     {newsData.map(news => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={news._id}>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={news.news_id}>
                             <NewsCard
-                                id={news._id}
+                                id={news.news_id}
                                 title={news.title}
                                 imageUrl={news.image}
                                 source={news.source}
                                 published_at={news.published_at}
+                                onClick={() => handleCardClick(news.news_id)}
                             />
                         </Grid>
                     ))}
-                   {hasMore && <div ref={loader} />} 
+                    {hasMore && (
+                        <div ref={loader} style={{ height: '20px', margin: '20px 0' }}>
+                            <Typography align="center">Loading more news...</Typography>
+                        </div>
+                    )}
                 </Grid>
             )}
             {tabValue === 1 && <SearchPage newsData={newsData} />}
@@ -129,12 +169,16 @@ function NewsPage() {
                                 title={news.title}
                                 imageUrl={news.image}
                                 source={news.source}
-                                userId={user.id} 
                                 published_at={news.published_at}
-                                onClick={handleCardClick}
+                                onClick={() => handleCardClick(news._id)}
                             />
                         </Grid>
                     ))}
+                    {subscribedHasMore && (
+                        <div ref={subscribedLoader} style={{ height: '20px', margin: '20px 0' }}>
+                            <Typography align="center">Loading more subscribed news...</Typography>
+                        </div>
+                    )}
                 </Grid>
             )}
         </Container>

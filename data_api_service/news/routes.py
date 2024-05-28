@@ -1,7 +1,4 @@
 # ## data_api_service/news/routes.py
-
-
-# data_api_service/news/routes.py
 from fastapi import APIRouter
 from .models import NewsModel
 from .schemas import NewsResponse, NewsData
@@ -24,5 +21,3 @@ async def get_news_list() :
     news_items, total_items = news_model.get_news_list()
     news_list = [NewsData(**news) for news in news_items]
     return {"newsList": news_list, "totalItems": total_items}
-
-

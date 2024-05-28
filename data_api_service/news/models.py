@@ -31,3 +31,13 @@ class NewsModel:
 
     def delete_one(self, news_id):
         return self.news_collection.delete_one({"_id": ObjectId(news_id)})
+
+    # def get_subscribed_news(self, user_id, skip: int, limit: int):
+    #     # MongoDB에서 구독 정보를 사용하여 필터링된 뉴스 목록을 조회
+    #     subscription_collection = db.get_subscriptions_collection()
+    #     subscribed_ids = subscription_collection.find({"user_id": ObjectId(user_id), "is_subscribe": True})
+    #     news_ids = [sub['news_id'] for sub in subscribed_ids]
+
+    #     news_cursor = self.news_collection.find({"_id": {"$in": news_ids}}).sort([("published_at", DESCENDING)]).skip(skip).limit(limit)
+    #     total_items = self.news_collection.count_documents({"_id": {"$in": news_ids}})
+    #     return list(news_cursor), total_items
