@@ -41,6 +41,7 @@ function NewsPage() {
                 const data = await fetchNews(page);
                 if (data && data.newsList.length > 0) {
                     setNewsData(prev => [...prev, ...data.newsList]);
+                    setPage(prev => prev + 1);  // 데이터 로딩 후 페이지 번호 증가
                 } else {
                     setHasMore(false);
                 }
@@ -81,6 +82,7 @@ function NewsPage() {
                 const data = await fetchSubscribedNews(subscribedPage);
                 if (data && data.length > 0) {
                     setSubscribedNews(prev => [...prev, ...data]);
+                    setPage(prev => prev + 1);  // 데이터 로딩 후 페이지 번호 증가
                 } else {
                     setSubscribedHasMore(false);
                 }
@@ -140,14 +142,14 @@ function NewsPage() {
             {tabValue === 0 && (
                 <Grid container spacing={4}>
                     {newsData.map(news => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={news.news_id}>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={news._id}>
                             <NewsCard
-                                id={news.news_id}
+                                id={news._id}
                                 title={news.title}
                                 imageUrl={news.image}
                                 source={news.source}
                                 published_at={news.published_at}
-                                onClick={() => handleCardClick(news.news_id)}
+                                onClick={() => handleCardClick(news._id)}
                             />
                         </Grid>
                     ))}
