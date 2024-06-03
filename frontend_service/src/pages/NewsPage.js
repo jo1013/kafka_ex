@@ -1,4 +1,3 @@
-// src/pages/NewsPage.js
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
@@ -58,10 +57,10 @@ function NewsPage() {
         const observer = new IntersectionObserver(
             entries => {
                 if (entries[0].isIntersecting && hasMore && !loading && tabValue === 0) {
-                    setPage(prev => prev + 1);
+                    setPage(prev => prev + 1); // 페이지 증가
                 }
             },
-            { threshold: 0.1 }
+            { threshold: 1.0 }
         );
         if (loader.current) {
             observer.observe(loader.current);
@@ -98,10 +97,10 @@ function NewsPage() {
         const observer = new IntersectionObserver(
             entries => {
                 if (entries[0].isIntersecting && subscribedHasMore && !loading && tabValue === 2) {
-                    setSubscribedPage(prev => prev + 1);
+                    setSubscribedPage(prev => prev + 1); // 페이지 증가
                 }
             },
-            { threshold: 0.1 }
+            { threshold: 1.0 }
         );
         if (subscribedLoader.current) {
             observer.observe(subscribedLoader.current);
@@ -116,13 +115,13 @@ function NewsPage() {
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
         if (newValue === 0) {
-            setPage(1);
-            setNewsData([]);
-            setHasMore(true);
+            setPage(1); // 페이지 초기화
+            setNewsData([]); // 뉴스 데이터 초기화
+            setHasMore(true); // 더 가져올 데이터가 있다고 설정
         } else if (newValue === 2) {
-            setSubscribedPage(1);
-            setSubscribedNews([]);
-            setSubscribedHasMore(true);
+            setSubscribedPage(1); // 구독 뉴스 페이지 초기화
+            setSubscribedNews([]); // 구독 뉴스 데이터 초기화
+            setSubscribedHasMore(true); // 더 가져올 구독 뉴스가 있다고 설정
         }
     };
 

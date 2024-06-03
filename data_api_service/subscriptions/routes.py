@@ -58,12 +58,7 @@ async def fetch_subscribed_news(
         logging.error(f'Error fetching subscribed news: {str(e)}')
         raise HTTPException(status_code=401, detail="Invalid token")
 
-# @router.get("/", response_model=NewsResponse)
-# async def get_news(page: int = 1, page_size: int = 10):
-#     skip = (page - 1) * page_size
-#     news_items, total_items = news_model.get_news(skip, page_size)
-#     news_list = [NewsData(**jsonable_encoder(news, custom_encoder={ObjectId: str})) for news in news_items]
-#     return NewsResponse(newsList=news_list, totalItems=total_items)
+
 
 # 뉴스 구독 상태를 토글하는 엔드포인트
 @router.patch("/{news_id}", response_model=Subscription)
