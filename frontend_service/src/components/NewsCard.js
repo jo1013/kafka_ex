@@ -5,13 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
 import { recordNewsClick } from '../api/userApi'; // 경로에 따라 변경 가능
 
-function NewsCard({ id, title, imageUrl, source, published_at, onClick}) {
+function NewsCard({ id, title, imageUrl, source, published_at}) {
   const navigate = useNavigate();
   const defaultImage = 'https://council.gb.go.kr/images/common/gb_wait.png'; // 기본 이미지 URL
 
   const handleClick = async () => {
     try {
-      await recordNewsClick(id);
+      await recordNewsClick(userId, id);
       navigate(`/news/${id}`);
     } catch (error) {
       console.error('Error recording news click:', error);

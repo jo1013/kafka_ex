@@ -46,7 +46,8 @@ function NewsPage() {
             try {
                 const data = await fetchNews(page); // 뉴스 데이터 가져오기
                 if (data && data.newsList.length > 0) {
-                    setNewsData(prev => [...prev, ...data.newsList]); // 뉴스 데이터 업데이트
+                    // setNewsData(prev => [...prev, ...data.newsList]); // 뉴스 데이터 업데이트
+                    setNewsData(prev => (page === 1 ? data.newsList : [...prev, ...data.newsList])); // 뉴스 데이터 업데이트
                     setPage(prev => prev + 1);  // 데이터 로딩 후 페이지 번호 증가
                 } else {
                     setHasMore(false); // 추가 데이터 없음 설정
@@ -89,7 +90,8 @@ function NewsPage() {
             try {
                 const data = await fetchSubscribedNews(subscribedPage); // 구독 뉴스 데이터 가져오기
                 if (data && data.length > 0) {
-                    setSubscribedNews(prev => [...prev, ...data]); // 구독 뉴스 데이터 업데이트
+                    // setSubscribedNews(prev => [...prev, ...data]); // 구독 뉴스 데이터 업데이트
+                    setSubscribedNews(prev => (subscribedPage === 1 ? data : [...prev, ...data])); // 구독 뉴스 데이터 업데이트
                     setSubscribedPage(prev => prev + 1);  // 데이터 로딩 후 페이지 번호 증가
                 } else {
                     setSubscribedHasMore(false); // 추가 데이터 없음 설정
@@ -111,7 +113,7 @@ function NewsPage() {
                     setSubscribedPage(prev => prev + 1); // 페이지 증가
                 }
             },
-            { threshold: 1.0 }
+            { threshold: 0.1 }
         );
         if (subscribedLoader.current) {
             observer.observe(subscribedLoader.current); // 로더 요소 관찰 시작
@@ -160,15 +162,11 @@ function NewsPage() {
                                 imageUrl={news.image}
                                 source={news.source}
                                 published_at={news.published_at}
-                                onClick={() => handleCardClick(news._id)}
                             />
                         </Grid>
                     ))}
-                    {hasMore && (
-                        <div ref={loader} style={{ height: '20px', margin: '20px 0' }}>
-                            <Typography align="center">Loading more news...</Typography>
-                        </div>
-                    )}
+                   
+                     {hasMore && <div ref={loader} />}  
                 </Grid>
             )}
             {tabValue === 1 && <SearchPage newsData={newsData} />}
