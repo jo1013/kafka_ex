@@ -1,5 +1,5 @@
 # ## data_api_service/news/routes.py
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from .models import NewsModel
 from .schemas import NewsResponse, NewsData
 from fastapi.encoders import jsonable_encoder
@@ -21,3 +21,13 @@ async def get_news_list() :
     news_items, total_items = news_model.get_news_list()
     news_list = [NewsData(**news) for news in news_items]
     return {"newsList": news_list, "totalItems": total_items}
+
+
+
+
+@router.get("/details/{news_id}", response_model=NewsData)
+async def get_news_by_id(news_id: str):
+    news_item = news_model.find_by_id(news_id)
+    if not news_item:
+        raise HTTPException(status_code=404, detail="News not found")
+    return NewsData(**jsonable_encoder(news_item, custom_encoder={ObjectId: str}))
