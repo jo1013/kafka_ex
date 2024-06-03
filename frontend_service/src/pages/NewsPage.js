@@ -162,6 +162,7 @@ function NewsPage() {
                                 imageUrl={news.image}
                                 source={news.source}
                                 published_at={news.published_at}
+                                onClick={() => handleCardClick(news._id)} // 클릭 이벤트 핸들러 추가
                             />
                         </Grid>
                     ))}

@@ -5,12 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
 import { recordNewsClick } from '../api/userApi'; // 경로에 따라 변경 가능
 
-function NewsCard({ id, title, imageUrl, source, published_at}) {
+function NewsCard({ id, title, imageUrl, source, published_at, onClick }) {
   const navigate = useNavigate();
   const defaultImage = 'https://council.gb.go.kr/images/common/gb_wait.png'; // 기본 이미지 URL
 
   const handleClick = async () => {
     try {
+      const userId = localStorage.getItem('userId'); // userId 가져오기
       await recordNewsClick(userId, id);
       navigate(`/news/${id}`);
     } catch (error) {
@@ -24,7 +25,9 @@ function NewsCard({ id, title, imageUrl, source, published_at}) {
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* CardActionArea에 onClick 이벤트 핸들러 추가 */}
-      <CardActionArea sx={{ flexGrow: 1 }} onClick={handleClick}>
+      {/* <CardActionArea sx={{ flexGrow: 1 }} onClick={handleClick}>
+       */}
+      <CardActionArea sx={{ flexGrow: 1 }} onClick={onClick || handleClick}> 
       <CardMedia
         component="img"
         image={imageUrl || defaultImage}
