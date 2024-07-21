@@ -18,6 +18,23 @@ class Database:
         self.subscriptions_collection = self.user_db[os.getenv('MONGODB_SUBSCRIPTIONS_COLLECTION')]
         self.subscriptions_list_collection = self.db[os.getenv('MONGODB_SUBSCRIPTION_LIST_COLLECTION')]
 
+    # Helper function to safely get collection names
+        def get_collection_name(env_var, default):
+            name = os.getenv(env_var)
+            if name is None:
+                print(f"Warning: {env_var} is not set. Using default value: {default}")
+                return default
+            if not isinstance(name, str):
+                print(f"Warning: {env_var} is not a string. Using default value: {default}")
+                return default
+            return name
+
+        # Set up collections
+        self.news_list_collection = self.db[get_collection_name('MONGODB_COLLECTION_NEWS_LIST', 'news_list')]
+        self.subscriptions_collection = self.user_db[get_collection_name('MONGODB_SUBSCRIPTIONS_COLLECTION', 'subscriptions')]
+        self.user_collection = self.user_db[get_collection_name('MONGODB_USER_COLLECTION', 'users')]
+        # Add other collections as needed
+
     def get_news_collection(self):
         return self.news_collection
 

@@ -37,10 +37,23 @@ export const recordNewsClick = async (userId, newsId) => {
 export const signupUser = async (email, password) => {
   try {
     const response = await axios.post(`${USER_API_ENDPOINT}/signup`, { email, password });
-    return response.data; // 회원가입 성공 시 반환되는 데이터
+    return response.data;
   } catch (error) {
     console.error('회원가입 실패:', error);
-    throw error;
+    if (error.response) {
+      // 서버가 2xx 범위를 벗어나는 상태 코드로 응답한 경우
+      console.error('서버 응답:', error.response.data);
+      console.error('상태 코드:', error.response.status);
+      throw new Error(error.response.data.detail || '회원가입에 실패했습니다.');
+    } else if (error.request) {
+      // 요청이 전송되었지만 응답을 받지 못한 경우
+      console.error('서버로부터 응답을 받지 못했습니다.');
+      throw new Error('서버와의 통신 중 오류가 발생했습니다.');
+    } else {
+      // 요청 설정 중에 오류가 발생한 경우
+      console.error('요청 설정 오류:', error.message);
+      throw new Error('요청 설정 중 오류가 발생했습니다.');
+    }
   }
 };
 

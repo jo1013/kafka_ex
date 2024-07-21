@@ -22,8 +22,13 @@ def record_click(click_data: ClickEvent):
 
 @router.post("/signup", response_model=UserDisplay, status_code=status.HTTP_201_CREATED)
 def signup(user_data: UserCreate):
-    user_dict = create_user(user_data)
-    return UserDisplay(**user_dict)
+    try:
+        user_dict = create_user(user_data)
+        return UserDisplay(**user_dict)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/login", response_model=LoginResponse)
 def login(user_credentials: UserLogin):

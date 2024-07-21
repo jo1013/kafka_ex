@@ -18,7 +18,7 @@ function SignUpPage() {
       navigate('/login');
     } catch (error) {
       console.error('회원가입 실패:', error);
-      alert(`회원가입 실패: ${error.response.data.detail}`);
+      alert(error.message || '회원가입에 실패했습니다.');
     }
   };
 

@@ -107,8 +107,8 @@ services:
       - MONGODB_DATABASE=${MONGODB_DATABASE}
       - MONGODB_COLLECTION=${MONGODB_COLLECTION}
     volumes:
-    - ./mongodb_service/mongodb_data:/data/db
-  
+      - ./mongodb_service/mongodb_data:/data/db
+      - ./mongodb_service/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
   data_api_service:
     container_name: data_api_service
     build: ./data_api_service
